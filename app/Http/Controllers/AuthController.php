@@ -27,13 +27,16 @@ class AuthController extends Controller
 
         if(Auth::attempt($user)){
 
+            $request->session()->regenerate();
             $role = Auth::user()->role;
 
             switch ($role) {
                 case 'admin':
                     return redirect()->route('admin.index');
+                case 'doctor':
+                    return redirect()->route('doctor.index');
                 default:
-                return redirect()->route('login');
+                    return redirect()->route('home');
             }
             // $request->session()->regenerate();
             // return redirect()->intended('/dashboard');
@@ -44,7 +47,7 @@ class AuthController extends Controller
 
     public function logout(){
         Auth::logout();
-        return redirect()->route('login');
+        return redirect()->route('login')->with('msg', 'Bạn đã đăng xuất thành công');
     }
 
 

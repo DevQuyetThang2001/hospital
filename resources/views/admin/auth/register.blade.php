@@ -27,8 +27,8 @@
         <div class="row w-100 mx-0">
           <div class="col-lg-4 mx-auto">
             <div class="auth-form-light text-left py-5 px-4 px-sm-5">
-              <div class="brand-logo">
-                <img src="{{asset('admin/images/logo.svg')}}" alt="logo">
+              <div class="brand-logo text-center">
+                <img  src="{{asset('admin/images/logoBenhVien.png')}}" alt="logo">
               </div>
               @if (session('msg'))
                  <div class="text-danger">{{ session('msg') }}</div>
@@ -36,7 +36,7 @@
               <form class="pt-3" method="POST" action="{{route('auth.register')}}">
                 @csrf
                 <div class="form-group">
-                  <input type="text" name="name" class="form-control form-control-lg" id="exampleInputUsername1" placeholder="Username">
+                  <input type="text" name="name" class="form-control form-control-lg" id="exampleInputUsername1" placeholder="Tên tài khoản">
                   @error('name')
                     <div class="text-danger">{{ $message }}</div>
                   @enderror
@@ -48,13 +48,13 @@
                   @enderror
                 </div>
                 <div class="form-group">
-                  <input type="password" name="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password">
+                  <input type="password" name="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Mật khẩu">
                   @error('password')
                     <div class="text-danger">{{ $message }}</div>
                   @enderror
                 </div>
                 <div class="mt-3">
-                  <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">Đăng Ký</button>
+                  <button type="submit" class="btn btn-block btn-info btn-lg font-weight-medium auth-form-btn">Đăng Ký</button>
                 </div>
                 <div class="text-center mt-4 font-weight-light">
                   Bạn đã có tài khoản ? <a href="{{route('login')}}" class="text-primary">Đăng nhập</a>
@@ -83,7 +83,7 @@
 
 </html>
 
-<html lang="en">
+{{-- <html lang="en">
 
 <head>
   <!-- Required meta tags -->
@@ -170,4 +170,4 @@
   <!-- endinject -->
 </body>
 
-</html>
+</html> --}}

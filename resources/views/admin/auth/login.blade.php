@@ -26,8 +26,8 @@
         <div class="row w-100 mx-0">
           <div class="col-lg-4 mx-auto">
             <div class="auth-form-light text-left py-5 px-4 px-sm-5">
-              <div class="brand-logo">
-                <img src="{{asset('admin/images/logo.svg')}}" alt="logo">
+              <div class="brand-logo text-center">
+                <img src="{{asset('admin/images/logoBenhVien.png')}}" alt="logo">
               </div>    
               @if (session('msg'))
                   <div class="text-danger">{{ session('msg') }}</div>
@@ -42,13 +42,13 @@
                   @enderror
                 </div>
                 <div class="form-group">
-                  <input type="password" value="{{old('password')}}" class="form-control form-control-lg" id="exampleInputPassword1" name="password" placeholder="Password">
+                  <input type="password" value="{{old('password')}}" class="form-control form-control-lg" id="exampleInputPassword1" name="password" placeholder="Mật khẩu">
                   @error('password')
                       <div class="text-danger">{{ $message }}</div>
                   @enderror
                 </div>
                 <div class="mt-3">
-                  <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">Đăng nhập</button>
+                  <button type="submit" class="btn btn-block btn-info  btn-lg font-weight-medium auth-form-btn">Đăng nhập</button>
                 </div>
                 <div class="my-2 d-flex justify-content-between align-items-center">
                   <a href="#" class="auth-link text-black">Quên mật khẩu ?</a>
@@ -56,6 +56,8 @@
                 <div class="text-center mt-4 font-weight-light">
                   Bạn chưa có tài khoản ? <a href="{{route('auth.register')}}" class="text-primary">Tạo tài khoản</a>
                 </div>
+
+                <a class="text-center d-block mt-2" href="{{route('home')}}">Quay về trang chủ</a>
               </form>
             </div>
           </div>

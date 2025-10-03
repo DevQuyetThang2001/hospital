@@ -5,6 +5,11 @@
         <div class="card">
             <div class="card-body">
               <h4 class="card-title">Sửa khoa viện</h4>
+              @session('update')
+                <div class="alert alert-success">
+                    {{ session('update') }}
+                </div>
+              @endsession
               <form class="forms-sample" action="{{route('admin.departments.edit',$department->id)}}" method="POST">
                 @csrf
                 <div class="form-group">

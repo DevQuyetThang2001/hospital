@@ -41,8 +41,8 @@
               </a>
             </li>
             <li class="nav-item  d-none d-lg-flex">
-              <a class="nav-link" href="#">
-                Employee
+              <a class="nav-link" href="{{route("home")}}">
+                Trang chủ
               </a>
             </li>
           </ul>
@@ -232,7 +232,7 @@
           <li class="nav-item">
             <a class="nav-link" href="{{route('admin.index')}}">
               <i class="typcn typcn-device-desktop menu-icon"></i>
-              <span class="menu-title">Dashboard</span>
+              <span class="menu-title">Tổng quan</span>
             </a>
           </li>
           <li class="nav-item">
@@ -256,19 +256,7 @@
           <li class="nav-item">
             <a class="nav-link" href="{{route('admin.schedules.list')}}">
               <i class="typcn typcn-th-small-outline menu-icon"></i>
-              <span class="menu-title">Quản lý lịch khám</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#icons">
-              <i class="typcn typcn-compass menu-icon"></i>
-              <span class="menu-title">Quản lý hồ sơ bệnh án</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#auth">
-              <i class="typcn typcn-user-add-outline menu-icon"></i>
-              <span class="menu-title">Quản lý bài viết</span>
+              <span class="menu-title">Lịch khám</span>
             </a>
           </li>
           <li class="nav-item">
@@ -277,28 +265,16 @@
               <span class="menu-title">Quản lý bệnh nhân</span>
             </a>
           </li>
-
-
-          <li class="nav-item">
-            <a class="nav-link" href="#qldt">
-              <i class="typcn typcn-briefcase menu-icon"></i>
-              <span class="menu-title">Quản lý đơn thuốc</span>
-            </a>
-          </li>
-
-
-
           <li class="nav-item">
             <a class="nav-link" href="{{route('admin.rooms.list')}}">
               <i class="typcn typcn-briefcase menu-icon"></i>
               <span class="menu-title">Quản lý phòng bệnh</span>
             </a>
           </li>
-
           <li class="nav-item">
-            <a class="nav-link" href="#qlvp">
+            <a class="nav-link" href="{{route('admin.feedbacks.list')}}">
               <i class="typcn typcn-briefcase menu-icon"></i>
-              <span class="menu-title">Quản lý viện phí</span>
+              <span class="menu-title">Quản lý đánh giá</span>
             </a>
           </li>
         </ul>

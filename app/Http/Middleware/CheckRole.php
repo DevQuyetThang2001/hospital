@@ -17,9 +17,16 @@ class CheckRole
     public function handle(Request $request, Closure $next, $role): Response
     {
 
-        if(!Auth::check() || Auth::user()->role !== $role){
-            return redirect()->route('auth.index');
+        // Nếu chưa đăng nhập
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để truy cập trang này.');
         }
+
+        // Nếu đã đăng nhập nhưng role không khớp
+        if (Auth::user()->role !== $role) {
+            abort(403, 'Unauthorized.');
+        }
+
         return $next($request);
     }
 }

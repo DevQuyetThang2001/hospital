@@ -5,6 +5,12 @@
         <div class="card">
             <div class="card-body">
               <h4 class="card-title">Sửa tài khoản</h4>
+              @session('update')
+                <div class="alert alert-success">
+                    {{ session('update') }}
+                </div>
+              @endsession
+
               <form class="forms-sample" action="{{route('admin.users.edit',$user->id)}}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">

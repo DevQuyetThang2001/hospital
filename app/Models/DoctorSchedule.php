@@ -12,7 +12,7 @@ class DoctorSchedule extends Model
 
     protected $table = 'doctor_schedules';
 
-    protected $fillable = ['doctor_id', 'schedule_id', 'day_of_week'];
+    protected $fillable = ['doctor_id', 'schedule_id', 'day_of_week','limit_per_hour'];
 
 
     public function doctor(): BelongsTo {

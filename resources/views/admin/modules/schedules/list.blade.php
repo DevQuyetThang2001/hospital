@@ -79,6 +79,7 @@
                                                                         <span>{{ $doctor->specialization ?? 'Bác sĩ' }}</span>
                                                                         <p>{{$doctor->department->name}}</p>
                                                                     @endforeach
+                                                                  
                                                                 </div>
                                                             @endforeach
                                                         </td>
