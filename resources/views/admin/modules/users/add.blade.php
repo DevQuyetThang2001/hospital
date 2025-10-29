@@ -33,6 +33,7 @@
                     <select name="role" class="form-control" id="exampleSelectGender">
                         <option value="">Chọn vai trò</option>      
                         <option value="admin">Admin</option>      
+                        <option value="schedule_manager">Quản lý</option>      
                         <option value="doctor">Bác sĩ</option>      
                         <option value="nurse">Y tá</option>      
                         <option value="receptionist">Lễ tân</option>      

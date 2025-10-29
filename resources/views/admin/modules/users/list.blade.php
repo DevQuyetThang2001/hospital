@@ -62,6 +62,8 @@
           <td>
           @if ($item->role == 'admin')
         Admin
+      @elseif($item->role == 'schedule_manager')
+      Quản lý
       @elseif($item->role == 'doctor')
       Bác sĩ
 

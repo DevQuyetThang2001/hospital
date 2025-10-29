@@ -28,12 +28,12 @@
                     </div>
                 </div>
 
-                @if(@session('success'))
+                @if (@session('success'))
                     <div class="alert alert-success mt-3">
                         {{ session('success') }}
                     </div>
                 @endif
-                @if(@session('error'))
+                @if (@session('error'))
                     <div class="alert alert-warning mt-3">
                         {{ session('error') }}
                     </div>
@@ -57,31 +57,38 @@
 
                 <div class="card shadow-sm p-4">
                     <h4 class="mb-3">Đặt lịch khám với bác sĩ</h4>
-                    <form action="{{route('doctor.appointment.post', $doctor->id)}}" method="POST">
+                    <form action="{{ route('doctor.appointment.post', $doctor->id) }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <input type="text" name="username" class="form-control"
-                                placeholder="Họ tên bệnh nhân (VD: Nguyễn Văn A)" value="{{old('username') }}">
+                                placeholder="Họ tên bệnh nhân (VD: Nguyễn Văn A)" value="{{ old('username') }}">
                             @error('username')
-                                <div class="text-danger text-sm">{{$message}}</div>
+                                <div class="text-danger text-sm">{{ $message }}</div>
                             @enderror
                         </div>
 
 
                         <div class="mb-3">
                             <input type="email" name="email" class="form-control" placeholder="Email liên hệ"
-                                value="{{old('email') }}">
+                                value="{{ old('email') }}">
                             @error('email')
-                                <div class="text-danger text-sm">{{$message}}</div>
+                                <div class="text-danger text-sm">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="phone" class="form-control" placeholder="Số điện thoại"
+                                value="{{ old('phone') }}">
+                            @error('phone')
+                                <div class="text-danger text-sm">{{ $message }}</div>
                             @enderror
                         </div>
 
 
                         <div class="mb-3">
                             <input type="date" name="appointment_date" class="form-control"
-                                value="{{old('appointment_date') }}">
+                                value="{{ old('appointment_date') }}">
                             @error('appointment_date')
-                                <div class="text-danger text-sm">{{$message}}</div>
+                                <div class="text-danger text-sm">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -96,7 +103,7 @@
                                 @endforeach
                             </select>
                             @error('schedule_id')
-                                <div class="text-danger text-sm">{{$message}}</div>
+                                <div class="text-danger text-sm">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -116,7 +123,4 @@
             </div>
         </div>
     </div>
-
-
-
 @endsection

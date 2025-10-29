@@ -15,7 +15,12 @@ class Schedule extends Model
     public function doctor()
     {
         return $this->belongsToMany(Doctor::class, 'doctor_schedules')
-                    ->withPivot('day_of_week')
-                    ->withTimestamps();
+            ->withPivot('day_of_week')
+            ->withTimestamps();
+    }
+
+    public function doctorSchedules()
+    {
+        return $this->hasMany(DoctorSchedule::class, 'schedule_id');
     }
 }

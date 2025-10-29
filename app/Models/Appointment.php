@@ -29,6 +29,17 @@ class Appointment extends Model
 
     public function schedule()
     {
-        return $this->belongsTo(DoctorSchedule::class, 'schedule_id');
+        return $this->belongsTo(DoctorSchedule::class, 'schedule_id', 'id');
     }
+
+    public function bookedBy()
+    {
+        return $this->belongsTo(User::class, 'booked_by');
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'patient_id');
+    }
+
 }

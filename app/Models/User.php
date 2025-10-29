@@ -47,23 +47,33 @@ class User extends Authenticatable
         ];
     }
 
-    public function hasRole($role){
+    public function hasRole($role)
+    {
         return $this->role === $role;
     }
 
-    public function hasAnyRole(array $roles){
+    public function hasAnyRole(array $roles)
+    {
         return in_array($this->role, $roles);
     }
 
 
-    public function doctor(){
-        return $this->hasOne(Doctor::class,'user_id','id');
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class, 'user_id', 'id');
     }
 
 
 
 
-    public function patient(){
-        return $this->hasOne(Patient::class,'user_id','id');
+    public function patient()
+    {
+        return $this->hasOne(Patient::class, 'user_id', 'id');
+    }
+
+
+    public function bookedAppointments()
+    {
+        return $this->hasMany(Appointment::class, 'booked_by');
     }
 }

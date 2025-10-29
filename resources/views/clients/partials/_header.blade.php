@@ -52,7 +52,7 @@
                             <a href="{{route('login')}}">Đăng nhập</a>
 
                         @else
-                           <span class="text-body">Xin chào, {{ Auth::user()->name }}</span>
+                            <span class="text-body">Xin chào, {{ Auth::user()->name }}</span>
                         @endif
                     </div>
                 </div>
@@ -75,24 +75,25 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0">
                         <a href="index.html" class="nav-item nav-link active">Trang chủ</a>
-                        <a href="about.html" class="nav-item nav-link">Thông tin</a>
+                        <a href="{{route('client.hospital.info')}}" class="nav-item nav-link">Thông tin</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Dịch vụ</a>
                             <div class="dropdown-menu m-0">
-                                <a href="blog.html" class="dropdown-item">Bài viết</a>
-                                <a href="detail.html" class="dropdown-item">Đánh giá</a>
+                                <a href="{{route('client.blog.list')}}" class="dropdown-item">Cẩm năng y khoa</a>
+                                <a href="{{route('client.hospital.feedback')}}" class="dropdown-item">Đánh giá</a>
                                 <a href="team.html" class="dropdown-item">Đội ngũ bác sĩ</a>
                                 <a href="{{route('appointment')}}" class="dropdown-item">Đặt lịch khám</a>
                                 <a href="search.html" class="dropdown-item">Tìm kiếm</a>
                             </div>
                         </div>
-                        <a href="contact.html" class="nav-item nav-link">Liên hệ</a>
+                        <a href="{{ route('client.hospital.contact') }}" class="nav-item nav-link">Liên hệ</a>
 
                         @if (Auth::check())
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Tài khoản</a>
                                 <div class="dropdown-menu m-0">
                                     <a href="blog.html" class="dropdown-item">Thông tin tài khoản</a>
+                                    <a href="{{route('client.hospital.listAppointment')}}" class="dropdown-item">Lịch khám của bạn</a>
                                     <a href="{{route('auth.logout')}}" class="dropdown-item">Đăng xuất</a>
                                 </div>
                             </div>

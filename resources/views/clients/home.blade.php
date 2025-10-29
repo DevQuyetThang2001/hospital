@@ -398,26 +398,43 @@
                     điều trị giúp cộng đồng chủ động bảo vệ sức khỏe bản thân và gia đình.</p>
             </div>
             <div class="row g-5">
-                <div class="col-xl-4 col-lg-6">
-                    <div class="bg-light rounded overflow-hidden">
-                        <img class="img-fluid w-100" src="img/blog-1.jpg" alt="">
-                        <div class="p-4">
-                            <a class="h3 d-block mb-3" href="">Dolor clita vero elitr sea stet dolor justo diam</a>
-                            <p class="m-0">Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna
-                                rebum clita rebum dolor stet amet justo</p>
-                        </div>
-                        <div class="d-flex justify-content-between border-top p-4">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <small>John Doe</small>
+                @if ($blogs->count() > 0)
+                    @foreach ($blogs as $item)
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="blog-card">
+                                @if ($item->images->count() > 0)
+                                    <img src="{{ asset('storage/' . $item->images->first()->image) }}" alt="{{ $item->title }}"
+                                        class="blog-image">
+                                @else
+                                    <img src="{{ asset('images/no-image.jpg') }}" alt="No image" class="blog-image">
+                                @endif
+
+                                <div class="p-4">
+                                    <a class="h4 d-block mb-3 text-dark fw-semibold"
+                                        href="{{ route('client.blog.show', $item->slug) }}">
+                                        {{ $item->title }}
+                                    </a>
+                                </div>
+
+                                <div class="blog-meta">
+                                    <div class="d-flex align-items-center">
+                                        @if (!empty($item->doctor->user->image))
+                                            <img src="{{ asset('storage/' . $item->doctor->user->image) }}" class="rounded-circle me-2"
+                                                width="28" height="28" style="object-fit: cover; object-position: center;">
+                                        @endif
+                                        <small>{{ $item->doctor->user->name ?? 'Ẩn danh' }}</small>
+                                    </div>
+                                    <div>
+                                        <small class="me-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
+                                        <small><i class="far fa-comment text-primary me-1"></i>123</small>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="d-flex align-items-center">
-                                <small class="ms-3"><i class="far fa-eye text-primary me-1"></i>12345</small>
-                                <small class="ms-3"><i class="far fa-comment text-primary me-1"></i>123</small>
-                            </div>
                         </div>
-                    </div>
-                </div>
+                    @endforeach
+                @endif
+
+                {{--
                 <div class="col-xl-4 col-lg-6">
                     <div class="bg-light rounded overflow-hidden">
                         <img class="img-fluid w-100" src="img/blog-2.jpg" alt="">
@@ -457,7 +474,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

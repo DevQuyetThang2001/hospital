@@ -5,7 +5,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Trang Bác Sĩ</title>
+  <title>@yield('title', 'Trang Quản Lý')</title>
   <!-- base:css -->
   <link rel="stylesheet" href="{{asset('admin/vendors/typicons.font/font/typicons.css')}}">
   <link rel="stylesheet" href="{{asset('admin/vendors/css/vendor.bundle.base.css')}}">
@@ -24,9 +24,9 @@
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-        <a class="navbar-brand brand-logo" href="{{route('doctor.index')}}"><img
+        <a class="navbar-brand brand-logo" href="{{route('manager.index')}}"><img
             src="{{asset('admin/images/logo.svg')}}" alt="logo" /></a>
-        <a class="navbar-brand brand-logo-mini" href="{{route('doctor.index')}}"><img src="images/logo-mini.svg"
+        <a class="navbar-brand brand-logo-mini" href="{{route('manager.index')}}"><img src="images/logo-mini.svg"
             alt="logo" /></a>
         <button class="navbar-toggler navbar-toggler align-self-center d-none d-lg-flex" type="button"
           data-toggle="minimize">
@@ -95,7 +95,7 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
               aria-labelledby="notificationDropdown">
-              <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
+              <p class="mb-0 font-weight-normal float-left dropdown-header">Thông báo</p>
               <a class="dropdown-item preview-item">
                 <div class="preview-thumbnail">
                   <div class="preview-icon bg-success">
@@ -116,9 +116,9 @@
                   </div>
                 </div>
                 <div class="preview-item-content">
-                  <h6 class="preview-subject font-weight-normal">Settings</h6>
+                  <h6 class="preview-subject font-weight-normal">Cài đặt</h6>
                   <p class="font-weight-light small-text mb-0">
-                    Private message
+                    Tin nhắn riêng tư
                   </p>
                 </div>
               </a>
@@ -226,43 +226,29 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{route('doctor.index')}}">
+            <a class="nav-link" href="{{route('manager.index')}}">
               <i class="typcn typcn-device-desktop menu-icon"></i>
               <span class="menu-title">Tổng quan</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{route('doctor.schedules.all')}}">
+            <a class="nav-link" href="{{route('manager.schedules.all')}}">
               <i class="typcn typcn-calendar-outline menu-icon"></i>
               <span class="menu-title">Lịch khám</span>
             </a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="{{route('doctor.schedules.list')}}">
+            <a class="nav-link" href="{{route('manager.schedules.list')}}">
               <i class="typcn typcn-calendar-outline menu-icon"></i>
               <span class="menu-title">Quản lý lịch khám</span>
             </a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="{{route('doctor.schedules.create')}}">
+            <a class="nav-link" href="{{route('manager.schedules.create')}}">
               <i class="typcn typcn-th-small-outline menu-icon"></i>
               <span class="menu-title">Tạo lịch khám</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{route('doctor.blogs.list')}}">
-              {{-- <i class="typcn typcn-th-small-outline menu-icon"></i> --}}
-              <i class="typcn typcn-document-add menu-icon"></i>
-              <span class="menu-title">Tạo bài viết</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{route('doctor.listAppointment')}}">
-              {{-- <i class="typcn typcn-th-small-outline menu-icon"></i> --}}
-              <i class="typcn typcn-document-add menu-icon"></i>
-              <span class="menu-title">Danh sách lịch hẹn</span>
             </a>
           </li>
         </ul>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Appointment;
 use App\Models\Avatar;
 use App\Models\Department;
 use App\Models\Doctor;
@@ -123,6 +124,8 @@ class AdminController extends Controller
     public function delete_user($id)
     {
         $user = User::find($id);
+        // Đặt null cho các lịch do user này đặt
+        //Appointment::where('booked_by', $user->id)->update(['booked_by' => null]);
         $user->delete();
 
 
