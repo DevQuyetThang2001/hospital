@@ -265,6 +265,21 @@
               <span class="menu-title">Danh sách lịch hẹn</span>
             </a>
           </li>
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{route('doctor.patients.list')}}">
+              <i class="typcn typcn-th-small-outline menu-icon"></i>
+              <span class="menu-title">Xác nhận tài khoản</span>
+            </a>
+          </li>
+
+           <li class="nav-item">
+            <a class="nav-link" href="{{route('doctor.patients.show')}}">
+              <i class="typcn typcn-th-small-outline menu-icon"></i>
+              <span class="menu-title">Xác nhận bệnh nhân</span>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- partial -->

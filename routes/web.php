@@ -30,24 +30,32 @@ Route::get('/cẩm-năng-y-khoa/{slug}', [HomeController::class, 'show'])->name(
 
 // Thông tin bệnh viện
 
-Route::get('/thông-tin-bệnh-viện',[HomeController::class,'about'])->name('client.hospital.info');
+Route::get('/thông-tin-bệnh-viện', [HomeController::class, 'about'])->name('client.hospital.info');
 
 
 // Liên hệ
 
-Route::get('/liên-hệ',[HomeController::class,'contact'])->name('client.hospital.contact');
+Route::get('/liên-hệ', [HomeController::class, 'contact'])->name('client.hospital.contact');
 
-Route::post('liên-hệ',[HomeController::class,'send'])->name('client.hospital.contact.send');
+Route::post('liên-hệ', [HomeController::class, 'send'])->name('client.hospital.contact.send');
 // -------------------------------------------------
 
 // Đánh giá
 
-Route::get('/đánh-giá',[HomeController::class,'feedback'])->name('client.hospital.feedback');
-Route::post('/đánh-giá',[HomeController::class,'send_feedback'])->name('client.hospital.feedback.store');
+Route::get('/đánh-giá', [HomeController::class, 'feedback'])->name('client.hospital.feedback');
+Route::post('/đánh-giá', [HomeController::class, 'send_feedback'])->name('client.hospital.feedback.store');
 
 
 // Lịch khám của bạn
-Route::get('/lịch-khám-của-bạn',[HomeController::class,'viewClientAppointment'])->name('client.hospital.listAppointment');
+Route::get('/lịch-khám-của-bạn', [HomeController::class, 'viewClientAppointment'])->name('client.hospital.listAppointment');
+
+
+Route::get('/lịch-khám-của-bạn/{id}/chi-tiết', [HomeController::class, 'ViewAppointmentDetail'])
+    ->name('client.appointment.detail');
+
+// Xuất PDF
+Route::get('/lịch-khám-của-bạns/{id}/xuất-pdf', [HomeController::class, 'exportAppointmentPDF'])
+    ->name('client.appointment.exportPDF');
 // ----------------- ROLE ADMIN --------------------
 // Route::get('/dashboard', function () {
 //     return 'Welcome to Dashboard!';
@@ -153,8 +161,19 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':docto
 
     // Xem lịch khám bệnh và xác nhận
 
-    Route::get('doctor/list_appointment',[DoctorController::class,'viewAppointment'])->name('doctor.listAppointment');
+    Route::get('doctor/list_appointment', [DoctorController::class, 'viewAppointment'])->name('doctor.listAppointment');
+    Route::post('doctor/list_appointment/confirm/{id}', [DoctorController::class, 'confirmAppointment'])->name('doctor.listAppointment.confirm');
+    Route::post('doctor/list_appointment/reject/{id}', [DoctorController::class, 'rejectAppointment'])->name('doctor.listAppointment.reject');
+    Route::post('doctor/list_appointment/complete/{id}', [DoctorController::class, 'completeAppointment'])
+        ->name('doctor.listAppointment.complete');
 
+    // Xác nhận tài khoản bệnh nhân
+    Route::get('doctor/patients/list', [DoctorController::class, 'list_patient_account'])->name('doctor.patients.list');
+    Route::post('/doctor/patients/{user_id}', [DoctorController::class, 'confirm'])->name('doctor.patient.confirm');
+
+    // Xác nhận bệnh nhân offline
+    Route::get('/doctor/patients/confirm', [DoctorController::class, 'show_form_patient'])->name('doctor.patients.show');
+    Route::post('/doctor/patients/confirm', [DoctorController::class, 'confirm_patient'])->name('doctor.patients.store');
 });
 
 
@@ -172,9 +191,6 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':sched
     Route::get('/manager/schedules/edit/{id}', [ManagerController::class, 'editSchedule'])->name('manager.schedules.edit');
     Route::put('/manager/schedules/edit/{id}', [ManagerController::class, 'updateSchedule'])->name('manager.schedules.update');
     Route::delete('/manager/schedules/delete/{id}', [ManagerController::class, 'deleteSchedule'])->name('manager.schedules.delete');
-
-
-   
 });
 
 

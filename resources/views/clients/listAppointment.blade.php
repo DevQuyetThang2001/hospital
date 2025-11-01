@@ -36,28 +36,56 @@
                 @foreach ($appointments as $item)
                     <div class="col-lg-6">
                         <div class="bg-light rounded p-4 shadow-sm h-100">
+                            @php
+                                $statusColors = [
+                                    'pending' => 'bg-warning text-dark',
+                                    'confirmed' => 'bg-success text-white',
+                                    'cancelled' => 'bg-danger text-white',
+                                    'completed' => 'bg-primary text-white',
+                                ];
+
+                                $statusLabels = [
+                                    'pending' => 'Chờ xác nhận',
+                                    'confirmed' => 'Đã xác nhận',
+                                    'cancelled' => 'Đã từ chối',
+                                    'completed' => 'Hoàn thành',
+                                ];
+                            @endphp
+
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="mb-0">Bác sĩ: {{ $item->doctor->user->name ?? 'N/A' }}</h5>
-                                @php
-                                    $statusColors = [
-                                        'confirmed' => 'bg-success text-white',
-                                        'pending' => 'bg-warning text-dark',
-                                        'cancelled' => 'bg-danger text-white',
-                                    ];
-                                @endphp
+                                <h5 class="mb-0 fw-bold">
+                                    👨‍⚕️ Bác sĩ: {{ $item->doctor->user->name ?? 'N/A' }}
+                                </h5>
+
                                 <span
                                     class="px-3 py-1 rounded-pill {{ $statusColors[$item->status] ?? 'bg-secondary text-white' }}">
-                                    {{ ucfirst($item->status) }}
+                                    {{ $statusLabels[$item->status] ?? 'Không rõ' }}
                                 </span>
                             </div>
+
+                            <div class="mb-2 text-muted">
+                                <p class="mb-1"><strong>Khoa:</strong>
+                                    {{ $item->doctor->department->name ?? 'Chưa cập nhật' }}</p>
+                                <p class="mb-1"><strong>Chuyên ngành:</strong>
+                                    {{ $item->doctor->specialization ?? 'Chưa cập nhật' }}</p>
+                                <p class="mb-1"><strong>Email:</strong> {{ $item->doctor->user->email ?? 'Không có' }}</p>
+                                <p class="mb-3"><strong>SĐT:</strong> {{ $item->doctor->user->phone ?? 'Không có' }}</p>
+                            </div>
+
+                            <hr class="my-2">
+
                             <p class="mb-1"><strong>Ngày khám:</strong>
                                 {{ \Carbon\Carbon::parse($item->appointment_date)->format('d/m/Y') }}
-                                ({{ $item->day_vn ?? '-' }})</p>
+                                ({{ $item->day_vn ?? '-' }})
+                            </p>
                             <p class="mb-1"><strong>Giờ khám:</strong> {{ $item->start_time ?? '-' }} -
                                 {{ $item->end_time ?? '-' }}</p>
+
                             <div class="text-end mt-3">
-                                <a href="" class="btn btn-primary btn-sm">Chi
-                                    tiết</a>
+                                <a href="{{ route('client.appointment.detail',$item->id) }}"
+                                    class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-info-circle me-1"></i> Chi tiết
+                                </a>
                             </div>
                         </div>
                     </div>
