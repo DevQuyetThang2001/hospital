@@ -16,6 +16,7 @@ use App\Models\Schedule;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
 {
@@ -113,6 +114,70 @@ class HomeController extends Controller
     //     return back()->with('success', 'Lịch khám đã được đặt thành công!, Chờ xác nhận từ bác sĩ');
     // }
 
+    // public function appointmentStore(Request $request, Doctor $doctor)
+    // {
+    //     if (!Auth::check()) {
+    //         return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để đặt lịch khám.');
+    //     }
+
+    //     $user = Auth::user();
+
+    //     if ($user->role !== 'patient') {
+    //         return back()->with('error', 'Chỉ bệnh nhân mới được đặt lịch khám.');
+    //     }
+
+    //     // Lấy hồ sơ bệnh nhân tương ứng với user hiện tại
+    //     $patient = Patient::where('user_id', $user->id)->first();
+
+    //     if (!$patient) {
+    //         return back()->with('error', 'Tài khoản của bạn chưa được xác nhận hồ sơ bệnh nhân.');
+    //     }
+
+    //     $request->validate(
+    //         [
+    //             'username' => 'required|string|max:255',
+    //             'email' => 'required|email|max:255',
+    //             'phone' => 'required|regex:/^[0-9]{10,11}$/',
+    //             'appointment_date' => 'required|date',
+    //             'schedule_id' => 'required|exists:doctor_schedules,id',
+    //             'notes' => 'nullable|string|max:500',
+    //         ],
+    //         [
+    //             'username.required' => 'Tên bệnh nhân là bắt buộc.',
+    //             'email.required' => 'Email là bắt buộc.',
+    //             'phone.required' => 'Số điện thoại là bắt buộc.',
+    //             'phone.regex' => 'Số điện thoại phải gồm 10–11 chữ số.',
+    //             'appointment_date.required' => 'Ngày hẹn là bắt buộc.',
+    //             'schedule_id.required' => 'Lịch khám là bắt buộc.',
+    //             'schedule_id.exists' => 'Lịch khám không tồn tại.',
+    //         ],
+    //     );
+
+    //     $appointment = new Appointment();
+
+    //     // ✅ Nếu bệnh nhân tự đặt cho chính mình
+    //     $appointment->patient_id = $patient->id;
+
+    //     // ✅ Người đặt lịch luôn là user hiện tại
+    //     $appointment->booked_by = $user->id;
+
+    //     $appointment->doctor_id = $doctor->id;
+    //     $appointment->schedule_id = $request->schedule_id;
+    //     $appointment->username = $request->username; // Tên bệnh nhân hiển thị
+    //     $appointment->email = $request->email;
+    //     $appointment->phone = $request->phone;
+    //     $appointment->appointment_date = $request->appointment_date;
+    //     $appointment->notes = $request->notes;
+    //     $appointment->status = 'pending';
+
+    //     $appointment->save();
+
+    //     return back()->with('success', 'Lịch khám đã được đặt thành công! Vui lòng chờ bác sĩ xác nhận.');
+    // }
+
+
+
+
     public function appointmentStore(Request $request, Doctor $doctor)
     {
         if (!Auth::check()) {
@@ -152,26 +217,32 @@ class HomeController extends Controller
             ],
         );
 
+        // 🔹 Lấy lịch bác sĩ cụ thể
+        $doctorSchedule = DoctorSchedule::findOrFail($request->schedule_id);
+
+        // 🔹 Kiểm tra xem lịch còn chỗ không
+        if ($doctorSchedule->limit_per_hour <= 0) {
+            return back()->with('error', '⚠️ Lịch khám này đã đầy, vui lòng chọn khung giờ khác.');
+        }
+
+        // 🔹 Tạo lịch hẹn mới
         $appointment = new Appointment();
-
-        // ✅ Nếu bệnh nhân tự đặt cho chính mình
         $appointment->patient_id = $patient->id;
-
-        // ✅ Người đặt lịch luôn là user hiện tại
         $appointment->booked_by = $user->id;
-
         $appointment->doctor_id = $doctor->id;
         $appointment->schedule_id = $request->schedule_id;
-        $appointment->username = $request->username; // Tên bệnh nhân hiển thị
+        $appointment->username = $request->username;
         $appointment->email = $request->email;
         $appointment->phone = $request->phone;
         $appointment->appointment_date = $request->appointment_date;
         $appointment->notes = $request->notes;
         $appointment->status = 'pending';
-
         $appointment->save();
 
-        return back()->with('success', 'Lịch khám đã được đặt thành công! Vui lòng chờ bác sĩ xác nhận.');
+        // 🔹 Giảm giới hạn
+        $doctorSchedule->decrement('limit_per_hour');
+
+        return back()->with('success', '✅ Lịch khám đã được đặt thành công! Vui lòng chờ bác sĩ xác nhận.');
     }
 
     // Lọc lịch khám
@@ -470,5 +541,40 @@ class HomeController extends Controller
         }
 
         return view('clients.detail', compact('appointment'));
+    }
+
+
+    public function accountInfo()
+    {
+
+        $user = Auth::user();
+        return view('clients.account', compact('user'));
+    }
+
+    public function updateAccountInfo(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'password' => 'nullable|string|min:6|confirmed',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $user->name = $validated['name'];
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($validated['password']);
+        }
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('users', 'public');
+            $user->image = $path;
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Cập nhật thông tin thành công!');
     }
 }

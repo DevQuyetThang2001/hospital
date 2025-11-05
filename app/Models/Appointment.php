@@ -42,4 +42,8 @@ class Appointment extends Model
         return $this->belongsTo(Patient::class, 'patient_id');
     }
 
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'schedule_id', 'id');
+    }
 }

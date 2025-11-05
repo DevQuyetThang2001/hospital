@@ -95,7 +95,7 @@
             <div class="d-flex justify-content-center">
                 <div class="bg-light rounded p-5 shadow-sm text-center w-75">
                     <h5 class="mb-3">Bạn chưa có lịch khám nào.</h5>
-                    <a href="" class="btn btn-primary">Đặt lịch khám ngay</a>
+                    <a href="{{ route('appointment') }}" class="btn btn-primary">Đặt lịch khám ngay</a>
                 </div>
             </div>
         @endif

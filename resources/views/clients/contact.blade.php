@@ -2,7 +2,6 @@
 
 
 @section('content')
-
     <div class="container-fluid bg-primary py-5 mb-5">
         <div class="container py-5 text-center">
             <h1 class="display-3 text-white mb-3">Liên Hệ</h1>
@@ -75,12 +74,9 @@
     <!-- Google Map -->
     <div class="container-fluid px-0 mt-5">
         <iframe class="w-100" height="400" frameborder="0" style="border:0;" allowfullscreen
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.806616025986!2d105.78499321535987!3d21.0402984926721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab5c8d4b3c43%3A0x66bcbdfba7f30f!2zTmjDoCBow6BuZyBC4bq_biB2aeG7h24gUXXDoW4g4buZIE5hbQ!5e0!3m2!1svi!2s!4v1638980462156!5m2!1svi!2s">
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d121852.73084168327!2d105.6145828560406!3d18.73658947513432!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3139d3d37a05c553%3A0x24791a9777e6ba47!2zxJDhuqFpIGjhu41jIFZpbmggLSBDxqEgc-G7nyAy!5e1!3m2!1svi!2sus!4v1762310462149!5m2!1svi!2sus">
         </iframe>
+
+        
     </div>
-
-
-
-
-
 @endsection

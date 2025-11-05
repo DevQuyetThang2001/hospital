@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Doctor;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AppointmentRejectedMail;
 use App\Models\Appointment;
 use App\Models\Blog;
 use App\Models\Department;
@@ -12,8 +13,11 @@ use App\Models\Image;
 use App\Models\Patient;
 use App\Models\Schedule;
 use App\Models\User;
+use App\Mail\AppointmentConfirmedMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class DoctorController extends Controller
 {
@@ -525,6 +529,7 @@ class DoctorController extends Controller
 
     public function confirmAppointment($id)
     {
+        // Log::info('🟢 Hàm confirmAppointment được gọi!');
 
         $appointment = Appointment::findOrFail($id);
 
@@ -534,6 +539,17 @@ class DoctorController extends Controller
 
         $appointment->status = 'confirmed';
         $appointment->save();
+
+
+
+        // Log::info('Patient: ' . json_encode($appointment->patient->user->email));
+
+        if ($appointment->patient && $appointment->patient->user && $appointment->patient->user->email) {
+            $patientEmail = $appointment->patient->user->email;
+            Log::info('Gửi mail tới bệnh nhân: ' . $patientEmail);
+            Mail::to($patientEmail)
+                ->send(new AppointmentConfirmedMail($appointment));
+        }
 
         return back()->with('success', '✅ Đã xác nhận lịch hẹn thành công.');
     }
@@ -547,12 +563,39 @@ class DoctorController extends Controller
             return back()->with('info', 'Lịch hẹn này đã được xử lý.');
         }
 
+        // Cập nhật trạng thái
         $appointment->status = 'cancelled';
         $appointment->save();
 
-        return back()->with('error', '❌ Đã từ chối lịch hẹn.');
+        // ✅ Hoàn lại suất khám cho lịch của bác sĩ
+        if ($appointment->schedule_id) {
+            $schedule = DoctorSchedule::find($appointment->schedule_id);
+            if ($schedule) {
+                $schedule->increment('limit_per_hour');
+            }
+        }
+
+        // ✅ Gửi mail thông báo bị từ chối
+        if ($appointment->patient && $appointment->patient->user->email) {
+            Mail::to($appointment->patient->user->email)->send(new AppointmentRejectedMail($appointment));
+        }
+
+        return back()->with('error', '❌ Đã từ chối lịch hẹn và hoàn lại suất khám.');
     }
 
+
+    public function completeAppointment($id)
+    {
+
+        $appointment = Appointment::findOrFail($id);
+        if ($appointment->status !== 'confirmed') {
+            return back()->with('info', 'Lịch hẹn này chưa được xác nhận hoặc đã hoàn thành.');
+        }
+        $appointment->status = 'completed';
+
+        $appointment->save();
+        return back()->with('success', 'Đã hoàn thành lịch hẹn thành công.');
+    }
 
 
     public function list_patient_account()

@@ -1,97 +1,63 @@
+<!-- Footer Start -->
+<footer class="footer bg-primary text-light pt-5 mt-5">
+    <div class="container pb-4">
+        <div class="row g-4">
+            <!-- Logo & Giới thiệu -->
+            <div class="col-lg-4 col-md-6">
+                <h4 class="text-white text-uppercase mb-3">Bệnh viện Hồng Phúc</h4>
+                <p class="small">
+                    Chúng tôi mang đến dịch vụ khám chữa bệnh tận tâm, chuyên nghiệp và chất lượng hàng đầu.
+                    Đặt lịch nhanh chóng, chăm sóc chu đáo – vì sức khỏe của bạn là ưu tiên của chúng tôi.
+                </p>
+                <div class="d-flex align-items-center mt-3">
+                    <a class="btn btn-outline-light btn-sm rounded-circle me-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-outline-light btn-sm rounded-circle me-2" href="#"><i class="fab fa-youtube"></i></a>
+                    <a class="btn btn-outline-light btn-sm rounded-circle me-2" href="#"><i class="fab fa-tiktok"></i></a>
+                    <a class="btn btn-outline-light btn-sm rounded-circle" href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
 
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light mt-5 py-5">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">
-                        Get In Touch</h4>
-                    <p class="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et dolor sed
-                        dolor</p>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary me-3"></i>123 Street, New York, USA</p>
-                    <p class="mb-2"><i class="fa fa-envelope text-primary me-3"></i>info@example.com</p>
-                    <p class="mb-0"><i class="fa fa-phone-alt text-primary me-3"></i>+012 345 67890</p>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">
-                        Quick Links</h4>
-                    <div class="d-flex flex-column justify-content-start">
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Home</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>About Us</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Our Services</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Meet The Team</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Latest Blog</a>
-                        <a class="text-light" href="#"><i class="fa fa-angle-right me-2"></i>Contact Us</a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">
-                        Popular Links</h4>
-                    <div class="d-flex flex-column justify-content-start">
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Home</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>About Us</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Our Services</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Meet The Team</a>
-                        <a class="text-light mb-2" href="#"><i class="fa fa-angle-right me-2"></i>Latest Blog</a>
-                        <a class="text-light" href="#"><i class="fa fa-angle-right me-2"></i>Contact Us</a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">
-                        Newsletter</h4>
-                    <form action="">
-                        <div class="input-group">
-                            <input type="text" class="form-control p-3 border-0" placeholder="Your Email Address">
-                            <button class="btn btn-primary">Sign Up</button>
-                        </div>
-                    </form>
-                    <h6 class="text-primary text-uppercase mt-4 mb-3">Follow Us</h6>
-                    <div class="d-flex">
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-2" href="#"><i
-                                class="fab fa-twitter"></i></a>
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-2" href="#"><i
-                                class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-2" href="#"><i
-                                class="fab fa-linkedin-in"></i></a>
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i
-                                class="fab fa-instagram"></i></a>
-                    </div>
+            <!-- Thông tin liên hệ -->
+            <div class="col-lg-4 col-md-6">
+                <h5 class="text-white text-uppercase mb-3 border-bottom border-light pb-2">Liên hệ</h5>
+                <p class="mb-2"><i class="fa fa-map-marker-alt me-2"></i> 215 Nguyễn Trãi, TP. Biên Hòa, Đồng Nai</p>
+                <p class="mb-2"><i class="fa fa-envelope me-2"></i> hotro@hongphuchospital.vn</p>
+                <p class="mb-2"><i class="fa fa-phone-alt me-2"></i> (0251) 3 123 456</p>
+                <p class="mb-0"><i class="fa fa-clock me-2"></i> Thứ 2 - CN: 7:00 - 21:00</p>
+            </div>
+
+            <!-- Liên kết nhanh -->
+            <div class="col-lg-4 col-md-6">
+                <h5 class="text-white text-uppercase mb-3 border-bottom border-light pb-2">Liên kết nhanh</h5>
+                <div class="d-flex flex-column">
+                    <a class="text-light mb-2" href="{{ route('home') }}"><i class="fa fa-angle-right me-2"></i>Trang chủ</a>
+                    <a class="text-light mb-2" href="{{ route('client.hospital.info') }}"><i class="fa fa-angle-right me-2"></i>Giới thiệu</a>
+                    <a class="text-light mb-2" href=""><i class="fa fa-angle-right me-2"></i>Dịch vụ</a>
+                    <a class="text-light mb-2" href=""><i class="fa fa-angle-right me-2"></i>Đội ngũ bác sĩ</a>
+                    <a class="text-light mb-2" href="{{ route('client.hospital.contact') }}"><i class="fa fa-angle-right me-2"></i>Liên hệ</a>
+                    <a class="text-light" href="{{ route('appointment') }}"><i class="fa fa-angle-right me-2"></i>Đặt lịch khám</a>
                 </div>
             </div>
         </div>
     </div>
-    <div class="container-fluid bg-dark text-light border-top border-secondary py-4">
-        <div class="container">
-            <div class="row g-5">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-md-0">&copy; <a class="text-primary" href="#">Your Site Name</a>. All Rights Reserved.
-                    </p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <p class="mb-0">Designed by <a class="text-primary" href="https://htmlcodex.com">HTML Codex</a></p>
-                </div>
-            </div>
-        </div>
+
+    <div class="border-top border-light text-center py-3 small bg-dark">
+        © 2025 <strong>Bệnh viện Hồng Phúc</strong> | Thiết kế bởi <a class="text-light" href="#">Đội phát triển hệ thống</a>
     </div>
-    <!-- Footer End -->
 
+    <!-- Nút Back to Top -->
+    <a href="#" class="btn btn-lg btn-light btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+</footer>
+<!-- Footer End -->
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{asset('client/lib/easing/easing.min.js')}}"></script>
+<script src="{{asset('client/lib/waypoints/waypoints.min.js')}}"></script>
+<script src="{{asset('client/lib/owlcarousel/owl.carousel.min.js')}}"></script>
+<script src="{{asset('client/lib/tempusdominus/js/moment.min.js')}}"></script>
+<script src="{{asset('client/lib/tempusdominus/js/moment-timezone.min.js')}}"></script>
+<script src="{{asset('client/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js')}}"></script>
 
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{asset('client/lib/easing/easing.min.js')}}"></script>
-    <script src="{{asset('client/lib/waypoints/waypoints.min.js')}}"></script>
-    <script src="{{asset('client/lib/owlcarousel/owl.carousel.min.js')}}"></script>
-    <script src="{{asset('client/lib/tempusdominus/js/moment.min.js')}}"></script>
-    <script src="{{asset('client/lib/tempusdominus/js/moment-timezone.min.js')}}"></script>
-    <script src="{{asset('client/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js')}}"></script>
-
-    <!-- Template Javascript -->
-    <script src="{{asset('client/js/main.js')}}"></script>
-</body>
-
-</html>
+<!-- Template Javascript -->
+<script src="{{asset('client/js/main.js')}}"></script>

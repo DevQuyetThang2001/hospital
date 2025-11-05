@@ -74,7 +74,7 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0">
-                        <a href="index.html" class="nav-item nav-link active">Trang chủ</a>
+                        <a href="/" class="nav-item nav-link active">Trang chủ</a>
                         <a href="{{route('client.hospital.info')}}" class="nav-item nav-link">Thông tin</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Dịch vụ</a>
@@ -92,7 +92,7 @@
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Tài khoản</a>
                                 <div class="dropdown-menu m-0">
-                                    <a href="blog.html" class="dropdown-item">Thông tin tài khoản</a>
+                                    <a href="{{route('client.account.info')}}" class="dropdown-item">Thông tin tài khoản</a>
                                     <a href="{{route('client.hospital.listAppointment')}}" class="dropdown-item">Lịch khám của bạn</a>
                                     <a href="{{route('auth.logout')}}" class="dropdown-item">Đăng xuất</a>
                                 </div>

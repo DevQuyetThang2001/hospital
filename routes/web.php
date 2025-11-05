@@ -8,11 +8,13 @@ use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\Manager\ManagerController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\PreventBackHistory;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 
 
 // Clients
+
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -56,6 +58,19 @@ Route::get('/lịch-khám-của-bạn/{id}/chi-tiết', [HomeController::class, 
 // Xuất PDF
 Route::get('/lịch-khám-của-bạns/{id}/xuất-pdf', [HomeController::class, 'exportAppointmentPDF'])
     ->name('client.appointment.exportPDF');
+
+
+
+// Thong tin tài khoản
+
+Route::middleware(['auth', PreventBackHistory::class])->group(function () {
+    Route::get('/thông-tin-tài-khoản', [HomeController::class, 'accountInfo'])->name(name: 'client.account.info');
+    Route::post('/thông-tin-tài-khoản/cập-nhật', [HomeController::class, 'updateAccountInfo'])->name('client.account.updateInfo');
+    
+});
+
+
+
 // ----------------- ROLE ADMIN --------------------
 // Route::get('/dashboard', function () {
 //     return 'Welcome to Dashboard!';
