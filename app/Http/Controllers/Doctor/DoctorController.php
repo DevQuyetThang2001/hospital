@@ -10,12 +10,15 @@ use App\Models\Department;
 use App\Models\Doctor;
 use App\Models\DoctorSchedule;
 use App\Models\Image;
+use App\Models\MedicalRecord;
 use App\Models\Patient;
 use App\Models\Schedule;
+use App\Models\TreatmentHistory;
 use App\Models\User;
 use App\Mail\AppointmentConfirmedMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
@@ -671,5 +674,169 @@ class DoctorController extends Controller
         $patient->save();
 
         return back()->with('success', 'Xác nhận thông tin bệnh nhân thành công.');
+    }
+
+
+    // Hồ sơ bệnh án
+    public function viewMedicalRecord()
+    {
+        $doctor = Auth::user()->doctor;
+
+        if (!$doctor) {
+            return back()->with('error', 'Không tìm thấy thông tin bác sĩ.');
+        }
+
+        $records = MedicalRecord::where('doctor_id', $doctor->id)
+            ->with(['patient.user']) // lấy cả thông tin user nếu bệnh nhân có tài khoản
+            ->latest()
+            ->paginate(10);
+
+        return view('doctor.modules.medical_record.list', compact('records'));
+    }
+
+    public function addMedicalRecord()
+    {
+        $doctor = Auth::user()->doctor;
+
+        if (!$doctor) {
+            return back()->with('error', 'Không tìm thấy thông tin bác sĩ.');
+        }
+
+        $departmentId = $doctor->department_id;
+
+        // Lấy danh sách bệnh nhân cùng khoa để chọn khi khám offline
+        $patients = Patient::where('department_id', $departmentId)
+            ->with('user')
+            ->get();
+
+        // Lấy các lịch hẹn chưa có hồ sơ bệnh án (tránh trùng)
+        $appointments = Appointment::where('doctor_id', $doctor->id)
+            ->whereDoesntHave('medicalRecord')
+            ->with('patient.user')
+            ->get();
+
+        return view('doctor.modules.medical_record.add', compact('patients', 'appointments'));
+    }
+
+    public function storeMedicalRecord(Request $request)
+    {
+        $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'appointment_id' => 'nullable|exists:appointments,id',
+            'diagnosis' => 'required|string',
+            'treatment' => 'nullable|string',
+            'medications' => 'nullable|string',
+        ]);
+
+        $doctor = Auth::user()->doctor;
+
+        // Tạo hồ sơ bệnh án mới
+        $record = MedicalRecord::create([
+            'patient_id' => $request->patient_id,
+            'doctor_id' => $doctor->id,
+            'appointment_id' => $request->appointment_id, // có thể null nếu khám offline
+            'diagnosis' => $request->diagnosis,
+            'treatment' => $request->treatment,
+            'medications' => $request->medications,
+        ]);
+
+        return redirect()->route('doctor.patient.medicalRecord')
+            ->with('success', '✅ Hồ sơ bệnh án đã được tạo thành công.');
+    }
+
+    public function showMedicalRecord($id)
+    {
+        $doctor = Auth::user()->doctor;
+
+        // Chỉ cho phép xem hồ sơ thuộc về bác sĩ hiện tại
+        $record = MedicalRecord::where('id', $id)->where('doctor_id', $doctor->id)->with(['patient.user', 'doctor.user'])->firstOrFail();
+
+        return view('doctor.modules.medical_record.detail', compact('record'));
+    }
+
+
+
+
+    public function updateTreatment(Request $request, $id)
+    {
+        // 1. Validation: Đảm bảo treatment được điền (không rỗng)
+        $request->validate([
+            'treatment' => 'required|string',
+            'note' => 'nullable|string',
+        ]);
+
+        $record = MedicalRecord::findOrFail($id);
+
+        // 2. KIỂM TRA LOGIC MỚI: Nếu treatment KHÔNG THAY ĐỔI và note cũng KHÔNG ĐƯỢC ĐIỀN
+        // (Lưu ý: Nếu note được điền, có thể bạn vẫn muốn cho phép lưu lịch sử)
+
+        $oldTreatment = $record->treatment;
+        $newTreatment = $request->treatment;
+        $newNote = $request->note;
+
+        // Kiểm tra: Nếu nội dung treatment MỚI giống hệt nội dung CŨ 
+        // VÀ trường note MỚI không có giá trị
+        if ($newTreatment === $oldTreatment && empty($newNote)) {
+            // Redirect lại với thông báo lỗi
+            return redirect()->route('doctor.patient.medicalRecord.show', $id)
+                ->with('error', 'Phác đồ điều trị và Ghi chú phải có thay đổi để cập nhật.');
+        }
+
+        // 3. Thực hiện lưu lịch sử (đã sửa lỗi || null thành ?? null)
+        TreatmentHistory::create([
+            'medical_record_id' => $record->id,
+            'treatment' => $newTreatment,
+            'note' => $newNote ?? null,
+        ]);
+
+        // 4. Cập nhật bản ghi chính
+        $record->treatment = $newTreatment;
+        $record->save();
+
+        // 5. Redirect thành công
+        return redirect()->route('doctor.patient.medicalRecord.show', $id)
+            ->with('success', 'Đã cập nhật phác đồ điều trị và lưu lịch sử thành công!');
+    }
+
+
+    public function accountInfo()
+    {
+        $user = Auth::user();
+        $doctor = Doctor::where('user_id', $user->id)->first();
+
+        if (!$doctor) {
+            abort(404, 'Không tìm thấy thông tin bác sĩ.');
+        }
+
+        return view('doctor.modules.account.profile', compact('user', 'doctor'));
+    }
+
+    public function updateAccountInfo(Request $request)
+    {
+        // Validate với thông báo tiếng Việt
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|string|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại.',
+            'new_password.required' => 'Vui lòng nhập mật khẩu mới.',
+            'new_password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự.',
+            'new_password.confirmed' => 'Xác nhận mật khẩu mới không khớp.',
+        ]);
+
+        $user = Auth::user();
+
+        // Kiểm tra mật khẩu hiện tại
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()
+                ->withErrors(['current_password' => 'Mật khẩu hiện tại không chính xác.'])
+                ->withInput();
+        }
+
+        // Cập nhật mật khẩu mới
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return back()->with('success', 'Đổi mật khẩu thành công!');
     }
 }

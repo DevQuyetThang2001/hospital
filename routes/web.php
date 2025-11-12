@@ -66,7 +66,6 @@ Route::get('/lịch-khám-của-bạns/{id}/xuất-pdf', [HomeController::class,
 Route::middleware(['auth', PreventBackHistory::class])->group(function () {
     Route::get('/thông-tin-tài-khoản', [HomeController::class, 'accountInfo'])->name(name: 'client.account.info');
     Route::post('/thông-tin-tài-khoản/cập-nhật', [HomeController::class, 'updateAccountInfo'])->name('client.account.updateInfo');
-    
 });
 
 
@@ -189,6 +188,18 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':docto
     // Xác nhận bệnh nhân offline
     Route::get('/doctor/patients/confirm', [DoctorController::class, 'show_form_patient'])->name('doctor.patients.show');
     Route::post('/doctor/patients/confirm', [DoctorController::class, 'confirm_patient'])->name('doctor.patients.store');
+
+
+    // Xem hồ sơ bệnh án
+    Route::get('/doctor/patients/medical-record', [DoctorController::class, 'viewMedicalRecord'])->name('doctor.patient.medicalRecord');
+    Route::get('/doctor/patients/medical-record/add', [DoctorController::class, 'addMedicalRecord'])->name('doctor.patient.medicalRecord.add');
+    Route::post('/doctor/patients/medical-record/add', [DoctorController::class, 'storeMedicalRecord'])->name('doctor.patient.medicalRecord.store');
+    Route::get('/doctor/patients/medical-record/{id}', [DoctorController::class, 'showMedicalRecord'])->name('doctor.patient.medicalRecord.show');
+    Route::put('/doctor/patients/medical-record/{id}/update-treatment', [DoctorController::class, 'updateTreatment'])
+        ->name('doctor.patient.medicalRecord.updateTreatment');
+
+    Route::get('/doctor/account', [DoctorController::class, 'accountInfo'])->name('doctor.account');
+    Route::post('/doctor/account', [DoctorController::class, 'updateAccountInfo'])->name('doctor.account.update');
 });
 
 
@@ -206,6 +217,10 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':sched
     Route::get('/manager/schedules/edit/{id}', [ManagerController::class, 'editSchedule'])->name('manager.schedules.edit');
     Route::put('/manager/schedules/edit/{id}', [ManagerController::class, 'updateSchedule'])->name('manager.schedules.update');
     Route::delete('/manager/schedules/delete/{id}', [ManagerController::class, 'deleteSchedule'])->name('manager.schedules.delete');
+    Route::get('/manager/account', [ManagerController::class, 'accountInfo'])->name('manager.account');
+    Route::post('/manager/account', [ManagerController::class, 'updateAccountInfo'])->name('manager.account.update');
+
+
 });
 
 

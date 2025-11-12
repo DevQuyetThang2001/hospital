@@ -324,4 +324,40 @@ class ManagerController extends Controller
 
         return view('manager.modules.schedules.list', compact('weeklySchedules', 'daysOfWeek', 'timeSlots'));
     }
+
+    public function accountInfo()
+    {
+        $user = Auth::user();
+        $manager = $user->manager;
+
+        return view('manager.modules.account.profile', compact('user', 'manager'));
+    }
+
+
+    public function updateAccountInfo(Request $request)
+    {
+        $user = Auth::user();
+        $manager = $user->manager;
+
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại.',
+            'new_password.required' => 'Vui lòng nhập mật khẩu mới.',
+            'new_password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự.',
+            'new_password.confirmed' => 'Mật khẩu mới và xác nhận mật khẩu không khớp.',
+        ]);
+
+        // Kiểm tra mật khẩu hiện tại
+        if (!password_verify($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng.']);
+        }
+
+        // Cập nhật mật khẩu mới
+        $user->password = bcrypt($request->new_password);
+        $user->save();
+
+        return back()->with('success', 'Mật khẩu đã được cập nhật thành công.');
+    }
 }

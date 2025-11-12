@@ -143,9 +143,9 @@
               <span class="nav-profile-name">{{Auth::check() ? Auth::user()->name : ""}}</span>
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item">
+              <a class="dropdown-item" href="{{route('manager.account')}}">
                 <i class="typcn typcn-cog text-primary"></i>
-                Cài đặt
+                Tài khoản
               </a>
               <a class="dropdown-item" href="{{route('auth.logout')}}">
                 <i class="typcn typcn-power text-primary"></i>

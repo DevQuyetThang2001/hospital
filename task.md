@@ -22,5 +22,17 @@ Làm phần hồ sơ bệnh án
 Làm xong thông báo từ chối lịch hẹn EMAIL
 
 # 5/11/2025
--> Làm tiếp phần hồ sơ bệnh án dành cho bác sĩ (Chua lam)
+-> Làm tiếp phần hồ sơ bệnh án dành cho bác sĩ (done)
 -> Làm xong thông tin tài khoản cho bệnh nhân (done)
+
+
+# 8/11/2025 
+-> Sửa bệnh án cho bệnh nhân (done)
+-> Hoàn thành thay đổi phác đồ điều trị bệnh án
+
+# 11/11/2025 
+-> Hien thi thoi gian thay doi phac do dieu tri (done)
+-> Thông tin tài khoản của bác sĩ, quản lý (done bác sĩ, quản lý)
+-> Xong thông tin tài khoản bệnh nhân (done)
+
+# 12/11/2025 (Tiep)

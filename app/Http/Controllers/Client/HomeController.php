@@ -556,25 +556,59 @@ class HomeController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
+        // Validate chung cho name và avatar
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'current_password' => 'nullable|required_with:password',
             'password' => 'nullable|string|min:6|confirmed',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ], [
+            'name.required' => 'Vui lòng nhập họ tên.',
+            'avatar.image' => 'File tải lên phải là ảnh.',
+            'avatar.mimes' => 'Ảnh phải có định dạng jpg, jpeg, hoặc png.',
+            'avatar.max' => 'Ảnh tối đa 2MB.',
+            'current_password.required_with' => 'Vui lòng nhập mật khẩu hiện tại để đổi mật khẩu.',
+            'password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu mới không khớp.',
         ]);
 
-        $user->name = $validated['name'];
+        $updated = false; // Biến theo dõi có cập nhật gì không
 
+        // Cập nhật tên nếu khác với giá trị cũ
+        if ($user->name !== $validated['name']) {
+            $user->name = $validated['name'];
+            $updated = true;
+        }
+
+        // Cập nhật avatar nếu có file mới
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $path;
+            $updated = true;
+        }
+
+        // Cập nhật mật khẩu nếu nhập password mới
         if ($request->filled('password')) {
-            $user->password = Hash::make($validated['password']);
+            // Bắt buộc nhập mật khẩu hiện tại
+            if (!$request->filled('current_password')) {
+                return back()->withErrors(['current_password' => 'Vui lòng nhập mật khẩu hiện tại để đổi mật khẩu.']);
+            }
+
+            // Kiểm tra mật khẩu hiện tại
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng.']);
+            }
+
+            // Cập nhật mật khẩu mới
+            $user->password = Hash::make($request->password);
+            $updated = true;
         }
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('users', 'public');
-            $user->image = $path;
+        if ($updated) {
+            $user->save();
+            return back()->with('success', 'Cập nhật thông tin thành công!');
         }
 
-        $user->save();
-
-        return back()->with('success', 'Cập nhật thông tin thành công!');
+        return back()->with('info', 'Bạn chưa thay đổi gì để cập nhật.');
     }
 }
