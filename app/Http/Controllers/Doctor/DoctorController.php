@@ -532,8 +532,6 @@ class DoctorController extends Controller
 
     public function confirmAppointment($id)
     {
-        // Log::info('🟢 Hàm confirmAppointment được gọi!');
-
         $appointment = Appointment::findOrFail($id);
 
         if ($appointment->status !== 'pending') {
@@ -591,13 +589,19 @@ class DoctorController extends Controller
     {
 
         $appointment = Appointment::findOrFail($id);
+        $doctor = Auth::user()->doctor; // bác sĩ hiện tại
+
+        // Chỉ hoàn thành nếu đang ở trạng thái confirmed
         if ($appointment->status !== 'confirmed') {
             return back()->with('info', 'Lịch hẹn này chưa được xác nhận hoặc đã hoàn thành.');
         }
-        $appointment->status = 'completed';
 
+        // Cập nhật trạng thái hoàn thành và lưu ID bác sĩ
+        $appointment->status = 'completed';
+        $appointment->completed_by_doctor_id = $doctor->id;
         $appointment->save();
-        return back()->with('success', 'Đã hoàn thành lịch hẹn thành công.');
+
+        return back()->with('success', '✅ Bác sĩ đã đánh dấu lịch hẹn hoàn thành.');
     }
 
 
@@ -839,4 +843,8 @@ class DoctorController extends Controller
 
         return back()->with('success', 'Đổi mật khẩu thành công!');
     }
+
+
+
+    
 }

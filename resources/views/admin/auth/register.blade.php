@@ -42,6 +42,12 @@
                   @enderror
                 </div>
                 <div class="form-group">
+                  <input type="text" name="CCCD" class="form-control form-control-lg" id="exampleInputUsername1" placeholder="Căn cước công dân">
+                  @error('CCCD')
+                    <div class="text-danger">{{ $message }}</div>
+                  @enderror
+                </div>
+                <div class="form-group">
                   <input type="email" name="email" class="form-control form-control-lg" id="exampleInputEmail1" placeholder="Email">
                   @error('email')
                     <div class="text-danger">{{ $message }}</div>

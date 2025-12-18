@@ -17,7 +17,7 @@
                 <div class="card shadow-sm">
                     @if (!empty($doctor->user->image))
                         <img src="{{ asset('storage/' . $doctor->user->image) }}" class="card-img-top img-fluid"
-                            style="height: 250px; object-fit: cover;" alt="Ảnh bác sĩ">
+                            style="height: 570px; object-fit: cover; object-position:center-top;" alt="Ảnh bác sĩ">
                     @else
                         <img src="https://via.placeholder.com/300x250?text=No+Image" class="card-img-top img-fluid"
                             alt="Ảnh bác sĩ">

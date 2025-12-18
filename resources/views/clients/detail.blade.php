@@ -48,7 +48,7 @@
                     {{ $appointment->schedule->schedule->end_time ?? '-' }}
                 </p>
                 </p>
-                <p><strong>Phòng khám:</strong> {{ $appointment->room->room_number ?? 'Chưa xếp phòng' }}</p>
+                <p><strong>Phòng khám:</strong> {{ $appointment->schedule->clinic->name ?? 'Chưa xếp phòng' }}</p>
 
                 @php
                     $statusLabels = [

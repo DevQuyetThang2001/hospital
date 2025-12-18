@@ -22,6 +22,13 @@
                   @enderror
                 </div>
                 <div class="form-group">
+                  <label for="exampleInputEmail3">Căn cước công dân</label>
+                  <input type="text" name="CCCD" value="{{old('CCCD')}}" class="form-control" id="exampleInputEmail3" placeholder="Căn cước công dân">
+                  @error('CCCD')
+                      <div class="text-danger text-sm">{{$message}}</div>
+                  @enderror
+                </div>
+                <div class="form-group">
                   <label for="exampleInputPassword4">Mật khẩu</label>
                   <input type="password" value="{{old('password')}}" name="password" class="form-control" id="exampleInputPassword4" placeholder="Mật khẩu">
                   @error('password')

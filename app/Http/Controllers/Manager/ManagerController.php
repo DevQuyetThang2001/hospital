@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\Clinics;
 use App\Models\Doctor;
 use App\Models\DoctorSchedule;
 use App\Models\FeedBack;
@@ -12,6 +13,7 @@ use App\Models\Schedule;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ManagerController extends Controller
 {
@@ -129,8 +131,16 @@ class ManagerController extends Controller
         $doctors = Doctor::all();
         $schudules = Schedule::all();
 
-        // dd($doctors);
-        return view('manager.modules.schedules.add', compact('schudules', 'doctors'));
+        $clinics = Clinics::withCount([
+            'doctorSchedules as doctor_count' => function ($q) {
+                $q->select(DB::raw('count(distinct doctor_id)'));
+            }
+        ])->where('status', 1)->get(); // chỉ lấy phòng đang hoạt động
+
+        return view(
+            'manager.modules.schedules.add',
+            compact('doctors', 'schudules', 'clinics')
+        );
     }
     // public function storeSchedule(Request $request)
     // {
@@ -171,35 +181,106 @@ class ManagerController extends Controller
     //     return redirect()->route('manager.schedules.list')->with('success', 'Lịch khám đã được tạo thành công.');
     // }
 
+    // public function storeSchedule(Request $request)
+    // {
+    //     $request->validate(
+    //         [
+    //             'doctor_id' => 'required|integer|exists:doctors,id',
+    //             'day_of_week' => 'required|string|in:Monday,Tuesday,Wednesday,Thursday,Friday',
+    //             'schedule_id' => 'required|integer|exists:schedules,id',
+    //             'limit_per_hour' => 'required|integer|min:1|max:10',
+    //             'clinic_id' => 'required|integer|exists:clinics,id'
+    //         ],
+    //         [
+    //             'doctor_id.required' => 'Vui lòng chọn bác sĩ.',
+    //             'doctor_id.exists' => 'Bác sĩ không tồn tại.',
+    //             'day_of_week.required' => 'Vui lòng chọn ngày khám.',
+    //             'day_of_week.in' => 'Ngày khám không hợp lệ. Vui lòng chọn từ thứ 2 đến thứ 6.',
+    //             'schedule_id.required' => 'Vui lòng chọn lịch khám.',
+    //             'schedule_id.exists' => 'Lịch khám không tồn tại.',
+    //             'limit_per_hour.max' => 'Giới hạn số bệnh nhân/giờ không được vượt quá 10.',
+    //             'limit_per_hour.min' => 'Giới hạn số bệnh nhân/giờ phải ít nhất là 1.',
+    //             'clinic_id.required' => 'Vui lòng chọn phòng khám.',
+    //             'clinic_id.exists' => 'Phòng khám không tồn tại.',
+    //         ],
+    //     );
+
+    //     // Kiểm tra trùng lịch
+    //     $isDuplicate = DoctorSchedule::where('doctor_id', $request->doctor_id)->where('day_of_week', $request->day_of_week)->where('schedule_id', $request->schedule_id)->exists();
+
+    //     if ($isDuplicate) {
+    //         return redirect()
+    //             ->back()
+    //             ->withErrors([
+    //                 'schedule_id' => 'Bác sĩ đã có lịch khám vào giờ này trong ngày đã chọn.',
+    //             ])
+    //             ->withInput();
+    //     }
+
+    //     DoctorSchedule::create([
+    //         'schedule_id' => $request->schedule_id,
+    //         'doctor_id' => $request->doctor_id,
+    //         'day_of_week' => $request->day_of_week,
+    //         'limit_per_hour' => $request->limit_per_hour,
+    //     ]);
+
+    //     return redirect()->route('manager.schedules.list')->with('success', 'Lịch khám đã được tạo thành công.');
+    // }
+
+
     public function storeSchedule(Request $request)
     {
         $request->validate(
             [
                 'doctor_id' => 'required|integer|exists:doctors,id',
+                'clinic_id' => 'required|integer|exists:clinics,id',
                 'day_of_week' => 'required|string|in:Monday,Tuesday,Wednesday,Thursday,Friday',
                 'schedule_id' => 'required|integer|exists:schedules,id',
                 'limit_per_hour' => 'required|integer|min:1|max:10',
             ],
             [
                 'doctor_id.required' => 'Vui lòng chọn bác sĩ.',
-                'doctor_id.exists' => 'Bác sĩ không tồn tại.',
+                'clinic_id.required' => 'Vui lòng chọn phòng khám.',
+                'clinic_id.exists' => 'Phòng khám không tồn tại.',
                 'day_of_week.required' => 'Vui lòng chọn ngày khám.',
-                'day_of_week.in' => 'Ngày khám không hợp lệ. Vui lòng chọn từ thứ 2 đến thứ 6.',
+                'day_of_week.in' => 'Ngày khám không hợp lệ.',
                 'schedule_id.required' => 'Vui lòng chọn lịch khám.',
                 'schedule_id.exists' => 'Lịch khám không tồn tại.',
-                'limit_per_hour.max' => 'Giới hạn số bệnh nhân/giờ không được vượt quá 10.',
                 'limit_per_hour.min' => 'Giới hạn số bệnh nhân/giờ phải ít nhất là 1.',
-            ],
+                'limit_per_hour.max' => 'Giới hạn số bệnh nhân/giờ không được vượt quá 10.',
+            ]
         );
 
-        // Kiểm tra trùng lịch
-        $isDuplicate = DoctorSchedule::where('doctor_id', $request->doctor_id)->where('day_of_week', $request->day_of_week)->where('schedule_id', $request->schedule_id)->exists();
+        // 🔹 Lấy phòng khám
+        $clinic = Clinics::find($request->clinic_id);
+
+        // 🔹 Đếm số bác sĩ hiện tại trong phòng
+        $currentDoctorCount = DoctorSchedule::where('clinic_id', $clinic->id)
+            ->distinct('doctor_id')
+            ->count('doctor_id');
+
+        // ❌ Nếu vượt quá quantity
+        if ($currentDoctorCount >= $clinic->quantity) {
+            return redirect()
+                ->back()
+                ->withErrors([
+                    'clinic_id' => "Phòng khám {$clinic->name} đã đủ {$clinic->quantity} bác sĩ."
+                ])
+                ->withInput();
+        }
+
+        // ❌ Kiểm tra trùng lịch
+        $isDuplicate = DoctorSchedule::where('doctor_id', $request->doctor_id)
+            ->where('clinic_id', $request->clinic_id)
+            ->where('day_of_week', $request->day_of_week)
+            ->where('schedule_id', $request->schedule_id)
+            ->exists();
 
         if ($isDuplicate) {
             return redirect()
                 ->back()
                 ->withErrors([
-                    'schedule_id' => 'Bác sĩ đã có lịch khám vào giờ này trong ngày đã chọn.',
+                    'schedule_id' => 'Bác sĩ đã có lịch khám vào thời gian này.'
                 ])
                 ->withInput();
         }
@@ -207,17 +288,20 @@ class ManagerController extends Controller
         DoctorSchedule::create([
             'schedule_id' => $request->schedule_id,
             'doctor_id' => $request->doctor_id,
+            'clinic_id' => $request->clinic_id,
             'day_of_week' => $request->day_of_week,
             'limit_per_hour' => $request->limit_per_hour,
         ]);
 
-        return redirect()->route('manager.schedules.list')->with('success', 'Lịch khám đã được tạo thành công.');
+        return redirect()
+            ->route('manager.schedules.list')
+            ->with('success', 'Lịch khám đã được tạo thành công.');
     }
 
     public function editSchedule($id)
     {
         // Lấy thông tin lịch khám cần sửa (bao gồm bác sĩ & khung giờ)
-        $schedule = DoctorSchedule::with(['schedule', 'doctor.user'])->findOrFail($id);
+        $schedule = DoctorSchedule::with(['schedule', 'doctor.user', 'clinic'])->findOrFail($id);
 
         // Ánh xạ ngày tiếng Anh -> tiếng Việt
         $dayMap = [
@@ -236,60 +320,159 @@ class ManagerController extends Controller
         $doctors = Doctor::with('user')->get();
         $schedules = Schedule::all();
 
-        return view('manager.modules.schedules.edit', compact('schedule', 'schedules', 'doctors'));
+        // 5️⃣ Danh sách phòng khám + số bác sĩ hiện có
+        $clinics = Clinics::withCount([
+            'doctorSchedules as doctor_count' => function ($q) {
+                $q->select(DB::raw('count(distinct doctor_id)'));
+            }
+        ])
+            ->where('status', 1)
+            ->get();
+
+        return view('manager.modules.schedules.edit', compact('schedule', 'schedules', 'doctors', 'clinics'));
     }
+
+    // public function updateSchedule(Request $request, $id)
+    // {
+    //     $request->validate(
+    //         [
+    //             'day_of_week' => 'required|string|in:Monday,Tuesday,Wednesday,Thursday,Friday',
+    //             'schedule_id' => 'required|integer|exists:schedules,id',
+    //             'limit_per_hour' => 'required|integer|min:1|max:10',
+    //             'doctor_id' => 'required|integer|exists:doctors,id',
+    //             'clinic_id'      => 'required|exists:clinics,id',
+
+    //         ],
+    //         [
+    //             'day_of_week.required' => 'Vui lòng chọn ngày khám.',
+    //             'day_of_week.in' => 'Ngày khám không hợp lệ. Vui lòng chọn từ thứ 2 đến thứ 6.',
+    //             'schedule_id.required' => 'Vui lòng chọn lịch khám.',
+    //             'schedule_id.exists' => 'Lịch khám không tồn tại. Vui lòng chọn lịch khám hợp lệ.',
+    //             'limit_per_hour.max' => 'Giới hạn số bệnh nhân/giờ không được vượt quá 10.',
+    //             'limit_per_hour.min' => 'Giới hạn số bệnh nhân/giờ phải ít nhất là 1.',
+    //             'doctor_id.required' => 'Vui lòng chọn bác sĩ.',
+    //             'clinic_id.required' => 'Vui lòng chọn phòng khám.',
+    //             'clinic_id.exists'   => 'Phòng khám không tồn tại.',
+    //         ],
+    //     );
+
+    //     $schedule = DoctorSchedule::findOrFail($id);
+
+    //     if ($schedule->day_of_week === $request->day_of_week && $schedule->schedule_id == $request->schedule_id && $schedule->limit_per_hour == $request->limit_per_hour) {
+    //         return back()->with('info', 'Bạn chưa thay đổi thông tin nào. Chỉ cập nhật khi có thay đổi.');
+    //     }
+
+    //     // kiểm tra trùng lịch
+    //     $isDuplicate = DoctorSchedule::where('doctor_id', $request->doctor_id)->where('day_of_week', $request->day_of_week)->where('schedule_id', $request->schedule_id)->where('id', '<>', $id)->exists();
+
+    //     if ($isDuplicate) {
+    //         return redirect()
+    //             ->back()
+    //             ->withErrors([
+    //                 'schedule_id' => 'Bác sĩ đã có lịch khám vào giờ này trong ngày đã chọn.',
+    //             ])
+    //             ->withInput();
+    //     }
+
+
+    //     if ($schedule->clinic_id != $request->clinic_id) {
+
+    //         $doctorCount = DoctorSchedule::where('clinic_id', $request->clinic_id)
+    //             ->distinct('doctor_id')
+    //             ->count('doctor_id');
+
+    //         if ($doctorCount >= 4) {
+    //             return back()
+    //                 ->withErrors([
+    //                     'clinic_id' => 'Phòng khám này đã đủ 4 bác sĩ, không thể thêm.',
+    //                 ])
+    //                 ->withInput();
+    //         }
+    //     }
+
+
+    //     if (!$schedule->isDirty()) {
+    //         return back()->with('info', 'Không có thông tin cần thay đổi'); // Không báo gì
+    //     }
+
+    //     $schedule->update([
+    //         'doctor_id' => $request->doctor_id,
+    //         'schedule_id' => $request->schedule_id,
+    //         'day_of_week' => $request->day_of_week,
+    //         'limit_per_hour' => $request->limit_per_hour,
+    //         'clinic_id' => $request->clinic_id,
+    //     ]);
+
+    //     return back()->with('success', 'Lịch khám đã được cập nhật thành công.');
+    // }
 
     public function updateSchedule(Request $request, $id)
     {
-        // $doctor = Doctor::where('user_id', Auth::id())->first();
-        // if (!$doctor) {
-        //     return back()->withErrors(['msg' => 'Không tìm thấy bác sĩ.']);
-        // }
-
         $request->validate(
             [
-                'day_of_week' => 'required|string|in:Monday,Tuesday,Wednesday,Thursday,Friday',
-                'schedule_id' => 'required|integer|exists:schedules,id',
+                'doctor_id'      => 'required|exists:doctors,id',
+                'clinic_id'      => 'required|exists:clinics,id',
+                'day_of_week'    => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday',
+                'schedule_id'    => 'required|exists:schedules,id',
                 'limit_per_hour' => 'required|integer|min:1|max:10',
             ],
             [
+                'doctor_id.required' => 'Vui lòng chọn bác sĩ.',
+                'clinic_id.required' => 'Vui lòng chọn phòng khám.',
+                'clinic_id.exists'   => 'Phòng khám không tồn tại.',
                 'day_of_week.required' => 'Vui lòng chọn ngày khám.',
-                'day_of_week.in' => 'Ngày khám không hợp lệ. Vui lòng chọn từ thứ 2 đến thứ 6.',
+                'day_of_week.in' => 'Ngày khám không hợp lệ.',
                 'schedule_id.required' => 'Vui lòng chọn lịch khám.',
-                'schedule_id.exists' => 'Lịch khám không tồn tại. Vui lòng chọn lịch khám hợp lệ.',
-                'limit_per_hour.max' => 'Giới hạn số bệnh nhân/giờ không được vượt quá 10.',
-                'limit_per_hour.min' => 'Giới hạn số bệnh nhân/giờ phải ít nhất là 1.',
-            ],
+                'schedule_id.exists' => 'Lịch khám không tồn tại.',
+                'limit_per_hour.min' => 'Giới hạn bệnh nhân/giờ ít nhất là 1.',
+                'limit_per_hour.max' => 'Giới hạn bệnh nhân/giờ tối đa là 10.',
+            ]
         );
 
         $schedule = DoctorSchedule::findOrFail($id);
 
-        if ($schedule->day_of_week === $request->day_of_week && $schedule->schedule_id == $request->schedule_id && $schedule->limit_per_hour == $request->limit_per_hour) {
-            return back()->with('info', 'Bạn chưa thay đổi thông tin nào. Chỉ cập nhật khi có thay đổi.');
-        }
-
-        // kiểm tra trùng lịch
-        $isDuplicate = DoctorSchedule::where('doctor_id', $request->doctor_id)->where('day_of_week', $request->day_of_week)->where('schedule_id', $request->schedule_id)->where('id', '<>', $id)->exists();
-
-        if ($isDuplicate) {
-            return redirect()
-                ->back()
-                ->withErrors([
-                    'schedule_id' => 'Bác sĩ đã có lịch khám vào giờ này trong ngày đã chọn.',
-                ])
-                ->withInput();
-        }
-
-        $schedule->update([
-            'doctor_id' => $request->doctor_id,
-            'schedule_id' => $request->schedule_id,
-            'day_of_week' => $request->day_of_week,
+        $schedule->fill([
+            'doctor_id'      => $request->doctor_id,
+            'clinic_id'      => $request->clinic_id,
+            'day_of_week'    => $request->day_of_week,
+            'schedule_id'    => $request->schedule_id,
             'limit_per_hour' => $request->limit_per_hour,
         ]);
 
+        if (! $schedule->isDirty()) {
+            return back()->with('info', 'Không có thông tin nào được thay đổi.');
+        }
+
+        $isDuplicate = DoctorSchedule::where('doctor_id', $request->doctor_id)
+            ->where('day_of_week', $request->day_of_week)
+            ->where('schedule_id', $request->schedule_id)
+            ->where('id', '<>', $id)
+            ->exists();
+
+        if ($isDuplicate) {
+            return back()
+                ->withErrors(['schedule_id' => 'Bác sĩ đã có lịch khám vào khung giờ này.'])
+                ->withInput();
+        }
+
+
+        if ($schedule->isDirty('clinic_id')) {
+
+            $doctorCount = DoctorSchedule::where('clinic_id', $request->clinic_id)
+                ->distinct('doctor_id')
+                ->count('doctor_id');
+
+            if ($doctorCount >= 4) {
+                return back()
+                    ->withErrors(['clinic_id' => 'Phòng khám này đã đủ 4 bác sĩ.'])
+                    ->withInput();
+            }
+        }
+
+        $schedule->save();
+
         return back()->with('success', 'Lịch khám đã được cập nhật thành công.');
     }
-
     public function deleteSchedule($id)
     {
         $schedule = DoctorSchedule::where('doctor_id', $id)->findOrFail($id);

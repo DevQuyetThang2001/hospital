@@ -41,6 +41,9 @@ class CheckRole
             case 'schedule_manager':
                 return redirect()->route('manager.index')
                     ->with('error', 'Bạn không có quyền truy cập trang này.');
+            case 'receptionist':
+                return redirect()->route('receptionist.index')
+                    ->with('error', 'Bạn không có quyền truy cập trang này.');
             default:
                 return redirect()->route('login')
                     ->with('error', 'Tài khoản không hợp lệ.');

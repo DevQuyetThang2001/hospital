@@ -244,11 +244,10 @@
               <span class="menu-title">Quản lý lịch khám</span>
             </a>
           </li>
-
           <li class="nav-item">
-            <a class="nav-link" href="{{route('manager.schedules.create')}}">
+            <a class="nav-link" href="{{route('manager.clinics.list')}}">
               <i class="typcn typcn-th-small-outline menu-icon"></i>
-              <span class="menu-title">Tạo lịch khám</span>
+              <span class="menu-title">Quản lý phòng khám</span>
             </a>
           </li>
         </ul>

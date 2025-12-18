@@ -5,7 +5,7 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Tạo lịch khám</h4>
-                    <form class="forms-sample" action="{{route('manager.schedules.store')}}" method="POST"
+                    <form class="forms-sample" action="{{ route('manager.schedules.store') }}" method="POST"
                         enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
@@ -16,20 +16,36 @@
                                     <option value="{{ $doctor->id }}">{{ $doctor->user->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
 
+                        {{-- Phòng khám --}}
+                        <div class="form-group">
+                            <label>Phòng khám</label>
+                            <select name="clinic_id" class="form-control" required>
+                                <option value="">-- Chọn phòng khám --</option>
+                                @foreach ($clinics as $clinic)
+                                    @php $isFull = $clinic->doctor_count >= $clinic->quantity; @endphp
+                                    <option value="{{ $clinic->id }}"
+                                        {{ old('clinic_id') == $clinic->id ? 'selected' : '' }}
+                                        {{ $isFull ? 'disabled' : '' }}>
+                                        {{ $clinic->name }}
+                                        ({{ $clinic->doctor_count }}/{{ $clinic->quantity }} bác sĩ)
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="exampleSelectGender">Giờ khám</label>
                             <select name="schedule_id" class="form-control" id="exampleSelectGender">
                                 <option value="">Chọn giờ khám</option>
                                 @foreach ($schudules as $item)
-                                    <option value="{{$item->id}}">
-                                        {{$item->start_time}} - {{$item->end_time}}
+                                    <option value="{{ $item->id }}">
+                                        {{ $item->start_time }} - {{ $item->end_time }}
                                     </option>
                                 @endforeach
                             </select>
                             @error('schedule_id')
-                                <div class="text-danger text-sm">{{$message}}</div>
+                                <div class="text-danger text-sm">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
@@ -44,25 +60,28 @@
                             <label for="exampleSelectGender">Ngày khám</label>
                             <select name="day_of_week" class="form-control" id="exampleSelectGender">
                                 <option value="">Chọn ngày khám</option>
-                                <option value="Monday" {{ old('day_of_week') == 'Monday' ? 'selected' : '' }}>Thứ 2</option>
-                                <option value="Tuesday" {{ old('day_of_week') == 'Tuesday' ? 'selected' : '' }}>Thứ 3</option>
+                                <option value="Monday" {{ old('day_of_week') == 'Monday' ? 'selected' : '' }}>Thứ 2
+                                </option>
+                                <option value="Tuesday" {{ old('day_of_week') == 'Tuesday' ? 'selected' : '' }}>Thứ 3
+                                </option>
                                 <option value="Wednesday" {{ old('day_of_week') == 'Wednesday' ? 'selected' : '' }}>Thứ 4
                                 </option>
                                 <option value="Thursday" {{ old('day_of_week') == 'Thursday' ? 'selected' : '' }}>Thứ 5
                                 </option>
-                                <option value="Friday" {{ old('day_of_week') == 'Friday' ? 'selected' : '' }}>Thứ 6</option>
+                                <option value="Friday" {{ old('day_of_week') == 'Friday' ? 'selected' : '' }}>Thứ 6
+                                </option>
 
                             </select>
 
                             @error('day_of_week')
-                                <div class="text-danger text-sm">{{$message}}</div>
+                                <div class="text-danger text-sm">{{ $message }}</div>
                             @enderror
                         </div>
 
 
 
                         <button type="submit" class="btn btn-primary mr-2">Tạo lịch khám</button>
-                        <a href="{{route('manager.schedules.list')}}" class="btn btn-warning mr-2">Trở về</a>
+                        <a href="{{ route('manager.schedules.list') }}" class="btn btn-warning mr-2">Trở về</a>
                     </form>
                 </div>
             </div>

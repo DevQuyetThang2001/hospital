@@ -33,6 +33,7 @@
                                     <th>Giờ khám</th>
                                     <th>Bác sĩ</th>
                                     <th>Số lượng bệnh nhân / giờ khám</th>
+                                    <th>Phòng khám</th>
                                     <th>Ngày tạo</th>
                                     <th>Thao tác</th>
                                 </tr>
@@ -47,6 +48,7 @@
                                             <td>{{ $item->schedule->start_time }} - {{ $item->schedule->end_time }}</td>
                                             <td>{{ $item->doctor->user->name }}</td>
                                             <td>{{ $item->limit_per_hour }}</td>
+                                            <td>{{ $item->clinic ? $item->clinic->name : "Chưa có"  }}</td>
                                             <td>{{ $item->created_at }}</td>
                                             <td>
                                                 <a href="{{ route('manager.schedules.edit', $item->id) }}"

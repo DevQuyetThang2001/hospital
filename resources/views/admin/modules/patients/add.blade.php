@@ -11,7 +11,7 @@
                 <label for="exampleInputName1">Khoa viện</label>
                 <select name="department_id" class="form-control" id="exampleSelectGender">
                       <option value="">Chọn khoa viện</option>      
-                    @foreach ($department as $item)
+                    @foreach ($departments as $item)
                         <option value="{{$item->id}}">{{$item->name}}</option>    
                     @endforeach  
                 </select>
@@ -24,7 +24,7 @@
                     <label for="exampleInputName1">Bệnh nhân</label>
                     <select name="user_id" class="form-control" id="exampleSelectGender">
                           <option value="">Chọn tài khoản</option>      
-                            @foreach ($user as $item)
+                            @foreach ($users as $item)
                                 <option value="{{$item->id}}">{{$item->name}}</option>    
                             @endforeach  
                     </select>

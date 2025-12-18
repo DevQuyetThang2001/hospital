@@ -7,12 +7,15 @@ use App\Models\Appointment;
 use App\Models\Blog;
 use App\Models\Contact;
 use App\Models\Department;
+use App\Models\Diseases;
 use App\Models\Doctor;
 use App\Models\DoctorSchedule;
 
 use App\Models\FeedBack;
 use App\Models\Patient;
 use App\Models\Schedule;
+use App\Models\User;
+use App\Notifications\NewAppointmentNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +25,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $doctors = Doctor::limit(2)->get();
+        $doctors = Doctor::limit(6)->get();
         $feedbacks = FeedBack::limit(5)->get();
         $blogs = Blog::limit(3)->get();
         // dd($doctors); // Assuming you want to fetch all doctors
@@ -239,7 +242,15 @@ class HomeController extends Controller
         $appointment->status = 'pending';
         $appointment->save();
 
+        $doctor->user->notify(new NewAppointmentNotification($appointment));
+
+        $receptionists = User::where('role', 'receptionist')->get();
+        foreach ($receptionists as $receptionist) {
+            $receptionist->notify(new NewAppointmentNotification($appointment));
+        }
         // 🔹 Giảm giới hạn
+
+
         $doctorSchedule->decrement('limit_per_hour');
 
         return back()->with('success', '✅ Lịch khám đã được đặt thành công! Vui lòng chờ bác sĩ xác nhận.');
@@ -610,5 +621,44 @@ class HomeController extends Controller
         }
 
         return back()->with('info', 'Bạn chưa thay đổi gì để cập nhật.');
+    }
+
+
+    public function doctors()
+    {
+        $doctors = Doctor::with('user', 'department')->paginate(9);
+        return view('clients.doctors', compact('doctors'));
+    }
+
+    public function showDoctor($id)
+    {
+        $doctor = Doctor::with('user', 'department', 'schedule')->findOrFail($id);
+        return view('clients.detailDoctor', compact('doctor'));
+    }
+
+
+    public function searchDoctorByDisease(Request $request)
+    {
+        $diseases = Diseases::all();
+        return view('clients.search', compact('diseases'));
+    }
+
+    public function processSearch(Request $request)
+    {
+        $request->validate([
+            'diseases' => 'required|array|min:1'
+        ]);
+
+        $selected = $request->diseases;
+
+        // Lấy chính danh sách bệnh đã chọn
+        $diseases = Diseases::whereIn('id', $selected)->get();
+
+        // Lấy bác sĩ liên quan
+        $doctors = Doctor::whereHas('diseases', function ($q) use ($selected) {
+            $q->whereIn('disease_id', $selected);
+        })->get();
+
+        return view('clients.search', compact('diseases', 'doctors'));
     }
 }

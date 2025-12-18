@@ -9,7 +9,7 @@
                 @csrf
                 <div class="form-group">
                   <label for="exampleInputName1">Ngày sinh</label>
-                  <input type="text" name="date_of_birth" value="{{$patient->date_of_birth}}" class="form-control" id="exampleInputName1" placeholder="Chuyên môn">
+                  <input type="text" name="date_of_birth" value="{{$patient->date_of_birth}}" class="form-control" id="exampleInputName1" placeholder="Ngày sinh">
                   @error('date_of_birth')
                       <div class="text-danger text-sm">{{$message}}</div>
                   @enderror

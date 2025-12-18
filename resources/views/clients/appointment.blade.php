@@ -32,8 +32,7 @@
                     <select name="department" id="filter_department" class="form-select">
                         <option value="">--Tất cả khoa--</option>
                         @foreach ($departments as $dep)
-                            <option value="{{ $dep->id }}"
-                                {{ request('department') == $dep->id ? 'selected' : '' }}>
+                            <option value="{{ $dep->id }}" {{ request('department') == $dep->id ? 'selected' : '' }}>
                                 {{ $dep->name }}
                             </option>
                         @endforeach
@@ -63,8 +62,7 @@
                     <select name="schedule_id" id="filter_time" class="form-select">
                         <option value="">--Tất cả ngày khám--</option>
                         @foreach ($schedulesAll as $item)
-                            <option value="{{ $item->id }}"
-                                {{ request('schedule_id') == $item->id ? 'selected' : '' }}>
+                            <option value="{{ $item->id }}" {{ request('schedule_id') == $item->id ? 'selected' : '' }}>
                                 {{ $item->start_time }} - {{ $item->end_time }}
                             </option>
                         @endforeach
@@ -79,7 +77,7 @@
                 </div>
             </form>
 
-            <div class="row">
+            {{-- <div class="row">
                 @if ($groupedSchedules->isEmpty())
                     <div class="col-12">
                         <div class="alert alert-info text-center" role="alert">
@@ -125,6 +123,66 @@
                                 </ul>
                                 <a href="{{route('doctor.appointment', $doctorId)}}" class="btn btn-primary mt-3 w-100">Đặt lịch
                                     khám</a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div> --}}
+
+            <div class="row">
+                @if ($groupedSchedules->isEmpty())
+                    <div class="col-12">
+                        <div class="alert alert-info text-center" role="alert">
+                            Không có lịch khám nào phù hợp với tiêu chí lọc của bạn.
+                        </div>
+                    </div>
+                @endif
+
+                @foreach ($groupedSchedules as $doctorId => $doctorSchedules)
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm h-100 d-flex flex-column">
+
+                            {{-- Ảnh bác sĩ --}}
+                            <div class="doctor-image-wrapper">
+                                @if (!empty($doctorSchedules->first()->doctor->user->image))
+                                    <img src="{{ asset('storage/' . $doctorSchedules->first()->doctor->user->image) }}"
+                                        alt="Ảnh bác sĩ">
+                                @else
+                                    <img src="https://via.placeholder.com/300x300?text=No+Image" alt="Ảnh bác sĩ">
+                                @endif
+                            </div>
+
+                            {{-- Nội dung --}}
+                            <div class="card-body text-center d-flex flex-column">
+                                <h5 class="card-title mb-1">
+                                    {{ $doctorSchedules->first()->doctor->user->name }}
+                                </h5>
+
+                                <p class="text-muted mb-2">
+                                    Chuyên khoa:
+                                    {{ $doctorSchedules->first()->doctor->department->name ?? 'Chưa cập nhật' }}
+                                </p>
+
+                                <h6 class="mt-2 mb-2">Lịch khám:</h6>
+
+                                {{-- Danh sách lịch --}}
+                                <ul class="list-group list-group-flush schedule-list mb-3">
+                                    @foreach ($doctorSchedules as $schedule)
+                                        <li class="list-group-item px-0">
+                                            <span class="text-primary fw-semibold">
+                                                {{ $dayMap[$schedule->day_of_week] ?? $schedule->day_of_week }}:
+                                            </span>
+                                            {{ $schedule->schedule->start_time }} -
+                                            {{ $schedule->schedule->end_time }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+
+                                {{-- Nút đặt lịch --}}
+                                <a href="{{ route('doctor.appointment', $doctorId) }}"
+                                    class="btn btn-primary mt-auto w-100">
+                                    Đặt lịch khám
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -192,5 +250,43 @@
             </form>
         </div>
     </div> --}}
-
 @endsection
+<style>
+    .doctor-image-wrapper {
+        height: 340px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .doctor-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+    }
+
+    /* Danh sách lịch khám */
+    .schedule-list {
+        max-height: 120px;
+        overflow-y: auto;
+    }
+
+    .schedule-list .list-group-item {
+        border: none;
+        font-size: 14px;
+        padding: 6px 0;
+    }
+
+    /* Card hover cho đẹp hơn */
+    .card {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+</style>

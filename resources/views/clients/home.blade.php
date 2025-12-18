@@ -4,49 +4,52 @@
 
     @include('clients.partials._banner')
     <!-- About Start -->
-    <div class="container-fluid py-5">
+    <div class="container-fluid py-5 bg-light">
         <div class="container">
-            <div class="row gx-5">
-                <div class="col-lg-5 mb-5 mb-lg-0" style="min-height: 500px;">
-                    <div class="position-relative h-100">
-                        <img class="position-absolute w-100 h-100 rounded" src="{{asset('client/img/about.jpg')}}"
-                            style="object-fit: cover;">
+            <div class="row gx-5 align-items-center">
+                <!-- Image Section -->
+                <div class="col-lg-5 mb-4 mb-lg-0">
+                    <div class="position-relative overflow-hidden rounded" style="min-height: 500px;">
+                        <img src="{{ asset('client/img/about.jpg') }}" class="w-100 h-100 position-absolute"
+                            style="object-fit: cover;" alt="About Us">
                     </div>
                 </div>
+
+                <!-- Text & Info Section -->
                 <div class="col-lg-7">
                     <div class="mb-4">
-                        <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Thông tin về chúng
-                            tôi</h5>
-                        <h1 class="display-4">Luôn dành sự quan tâm tốt nhất cho bạn và gia đình bạn</h1>
+                        <h5 class="d-inline-block text-primary text-uppercase border-bottom border-3">Thông tin về chúng tôi
+                        </h5>
+                        <h1 class="display-5 fw-bold mt-3">Luôn dành sự quan tâm tốt nhất cho bạn và gia đình bạn</h1>
                     </div>
-                    <p>Tempor erat elitr at rebum at at clita aliquyam consetetur. Diam dolor diam ipsum et, tempor
-                        voluptua sit consetetur sit. Aliquyam diam amet diam et eos sadipscing labore. Clita erat ipsum
-                        et lorem et sit, sed stet no labore lorem sit. Sanctus clita duo justo et tempor consetetur
-                        takimata eirmod, dolores takimata consetetur invidunt magna dolores aliquyam dolores dolore.
-                        Amet erat amet et magna</p>
-                    <div class="row g-3 pt-3">
-                        <div class="col-sm-3 col-6">
-                            <div class="bg-light text-center rounded-circle py-4">
-                                <i class="fa fa-3x fa-user-md text-primary mb-3"></i>
-                                <h6 class="mb-0">Qualified<small class="d-block text-primary">Doctors</small></h6>
+                    <p class="mb-4 text-muted">
+                        Chúng tôi luôn đặt sức khỏe của bạn lên hàng đầu. Đội ngũ bác sĩ chuyên môn cao, dịch vụ cấp cứu
+                        nhanh chóng và các phòng xét nghiệm hiện đại luôn sẵn sàng phục vụ bạn.
+                    </p>
+
+                    <div class="row g-3">
+                        <div class="col-6 col-sm-3">
+                            <div class="bg-white text-center rounded shadow-sm py-4 hover-shadow">
+                                <i class="fa fa-user-md fa-3x text-primary mb-3"></i>
+                                <h6 class="mb-0">Bác sĩ<br><small class="text-primary">Chuyên môn cao</small></h6>
                             </div>
                         </div>
-                        <div class="col-sm-3 col-6">
-                            <div class="bg-light text-center rounded-circle py-4">
-                                <i class="fa fa-3x fa-procedures text-primary mb-3"></i>
-                                <h6 class="mb-0">Emergency<small class="d-block text-primary">Services</small></h6>
+                        <div class="col-6 col-sm-3">
+                            <div class="bg-white text-center rounded shadow-sm py-4 hover-shadow">
+                                <i class="fa fa-procedures fa-3x text-primary mb-3"></i>
+                                <h6 class="mb-0">Dịch vụ<br><small class="text-primary">Cấp cứu 24/7</small></h6>
                             </div>
                         </div>
-                        <div class="col-sm-3 col-6">
-                            <div class="bg-light text-center rounded-circle py-4">
-                                <i class="fa fa-3x fa-microscope text-primary mb-3"></i>
-                                <h6 class="mb-0">Accurate<small class="d-block text-primary">Testing</small></h6>
+                        <div class="col-6 col-sm-3">
+                            <div class="bg-white text-center rounded shadow-sm py-4 hover-shadow">
+                                <i class="fa fa-microscope fa-3x text-primary mb-3"></i>
+                                <h6 class="mb-0">Xét nghiệm<br><small class="text-primary">Chính xác</small></h6>
                             </div>
                         </div>
-                        <div class="col-sm-3 col-6">
-                            <div class="bg-light text-center rounded-circle py-4">
-                                <i class="fa fa-3x fa-ambulance text-primary mb-3"></i>
-                                <h6 class="mb-0">Free<small class="d-block text-primary">Ambulance</small></h6>
+                        <div class="col-6 col-sm-3">
+                            <div class="bg-white text-center rounded shadow-sm py-4 hover-shadow">
+                                <i class="fa fa-ambulance fa-3x text-primary mb-3"></i>
+                                <h6 class="mb-0">Xe cứu thương<br><small class="text-primary">Miễn phí</small></h6>
                             </div>
                         </div>
                     </div>
@@ -56,80 +59,58 @@
     </div>
     <!-- About End -->
 
+    <style>
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+    </style>
 
 
-
-    <!-- Appointment Start -->
+    <!-- Search & Appointment Section Start -->
     <div class="container-fluid bg-primary my-5 py-5">
         <div class="container py-5">
-            <div class="row gx-5">
-                <div class="col-lg-6 mb-5 mb-lg-0">
+            <div class="row gx-5 align-items-center">
+
+                <!-- Left Text Section -->
+                <div class="col-lg-6 mb-5 mb-lg-0 text-white">
                     <div class="mb-4">
-                        <h5 class="d-inline-block text-white text-uppercase border-bottom border-5">Đặt lịch khám</h5>
-                        <h1 class="display-4">Đặt lịch hẹn cho gia đình bạn</h1>
+                        <h5 class="d-inline-block text-white text-uppercase border-bottom border-5">Dịch vụ hỗ trợ</h5>
+                        <h1 class="display-5 fw-bold mt-3">Tìm bác sĩ & Đặt lịch khám</h1>
                     </div>
-                    <p class="text-white mb-5">Eirmod sed tempor lorem ut dolores. Aliquyam sit sadipscing kasd ipsum.
-                        Dolor ea et dolore et at sea ea at dolor, justo ipsum duo rebum sea invidunt voluptua. Eos vero
-                        eos vero ea et dolore eirmod et. Dolores diam duo invidunt lorem. Elitr ut dolores magna sit.
-                        Sea dolore sanctus sed et. Takimata takimata sanctus sed.</p>
-                    <a class="btn btn-dark rounded-pill py-3 px-5 me-3" href="">Tìm bác sĩ</a>
-                    <a class="btn btn-outline-dark rounded-pill py-3 px-5" href="">Xem thêm</a>
+
+                    <p class="mb-5">
+                        Chọn chức năng phù hợp để bắt đầu: tìm bác sĩ theo triệu chứng hoặc đặt lịch khám trực tuyến.
+                    </p>
+
+                    <a class="btn btn-dark rounded-pill py-3 px-5 me-3" href="{{ route('client.doctors.searchByDisease') }}">
+                        🔍 Tìm bác sĩ theo triệu chứng
+                    </a>
+
+                    <a class="btn btn-outline-light rounded-pill py-3 px-5" href="{{ route('appointment') }}">
+                        🗓 Đặt lịch khám
+                    </a>
                 </div>
-                <div class="col-lg-6">
-                    <div class="bg-white text-center rounded p-5">
-                        <h1 class="mb-4">Đặt lịch khám ngay bây giờ</h1>
-                        <form>
-                            <div class="row g-3">
-                                <div class="col-12 col-sm-6">
-                                    <select class="form-select bg-light border-0" style="height: 55px;">
-                                        <option selected>Choose Department</option>
-                                        <option value="1">Department 1</option>
-                                        <option value="2">Department 2</option>
-                                        <option value="3">Department 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <select class="form-select bg-light border-0" style="height: 55px;">
-                                        <option selected>Select Doctor</option>
-                                        <option value="1">Doctor 1</option>
-                                        <option value="2">Doctor 2</option>
-                                        <option value="3">Doctor 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <input type="text" class="form-control bg-light border-0" placeholder="Your Name"
-                                        style="height: 55px;">
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <input type="email" class="form-control bg-light border-0" placeholder="Your Email"
-                                        style="height: 55px;">
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="date" id="date" data-target-input="nearest">
-                                        <input type="text" class="form-control bg-light border-0 datetimepicker-input"
-                                            placeholder="Date" data-target="#date" data-toggle="datetimepicker"
-                                            style="height: 55px;">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="time" id="time" data-target-input="nearest">
-                                        <input type="text" class="form-control bg-light border-0 datetimepicker-input"
-                                            placeholder="Time" data-target="#time" data-toggle="datetimepicker"
-                                            style="height: 55px;">
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <button class="btn btn-primary w-100 py-3" type="submit">Make An
-                                        Appointment</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+
+                <!-- Right Static Illustration -->
+                <div class="col-lg-6 text-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2966/2966482.png" alt="doctor search" class="img-fluid"
+                        style="max-width: 65%;">
                 </div>
+
             </div>
         </div>
     </div>
-    <!-- Appointment End -->
+    <!-- Search & Appointment Section End -->
+
+    <!-- Optional CSS for better hover effect -->
+    <style>
+        .btn:hover {
+            transition: 0.3s;
+            transform: translateY(-2px);
+        }
+    </style>
 
 
 
@@ -149,8 +130,8 @@
                             <div class="row g-0 bg-light rounded overflow-hidden">
                                 <div class="col-12 col-sm-5 h-100">
                                     @if (!empty($item->user->image))
-                                        <img class="img-fluid h-100" src="{{ asset('storage/' . $item->user->image) }}" alt="image"
-                                            style="object-fit: cover;">
+                                        <img class="img-fluid h-100" src="{{ asset('storage/' . $item->user->image) }}"
+                                            alt="image" style="object-fit: cover;">
                                     @else
                                         <img src="https://placehold.co/600x400?text=No+Image" class="img-fluid h-100"
                                             style="object-fit: cover;">
@@ -158,17 +139,18 @@
                                 </div>
                                 <div class="col-12 col-sm-7 h-100 d-flex flex-column">
                                     <div class="mt-auto p-4">
-                                        <h3>{{$item->user->name}}</h3>
-                                        <h6 class="fw-normal text-primary mb-2">{{$item->department->name}}</h6>
-                                        <h7 class="fw-normal text-secondary mb-2">Đã có {{$item->experience_years}} năm kinh nghiệm
+                                        <h3>{{ $item->user->name }}</h3>
+                                        <h6 class="fw-normal text-primary mb-2">{{ $item->department->name }}</h6>
+                                        <h7 class="fw-normal text-secondary mb-2">Đã có {{ $item->experience_years }} năm
+                                            kinh nghiệm
                                         </h7>
-                                        <p class="m-0">Chứng chỉ hành nghề {{$item->license_number}}</p>
+                                        <p class="m-0">Chứng chỉ hành nghề {{ $item->license_number }}</p>
                                     </div>
                                     <div class="d-flex mt-auto border-top p-4">
-                                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i
-                                                class="fab fa-twitter"></i></a>
-                                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i
-                                                class="fab fa-facebook-f"></i></a>
+                                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3"
+                                            href="#"><i class="fab fa-twitter"></i></a>
+                                        <a class="btn btn-lg btn-primary btn-lg-square rounded-circle me-3"
+                                            href="#"><i class="fab fa-facebook-f"></i></a>
                                         <a class="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i
                                                 class="fab fa-linkedin-in"></i></a>
                                     </div>
@@ -176,7 +158,6 @@
                             </div>
                         </div>
                     @endforeach
-
                 @endif
 
 
@@ -186,30 +167,7 @@
     <!-- Team End -->
 
 
-    <!-- Search Start -->
-    <div class="container-fluid bg-primary my-5 py-5">
-        <div class="container py-5">
-            <div class="text-center mx-auto mb-5" style="max-width: 500px;">
-                <h5 class="d-inline-block text-white text-uppercase border-bottom border-5">Find A Doctor</h5>
-                <h1 class="display-4 mb-4">Find A Healthcare Professionals</h1>
-                <h5 class="text-white fw-normal">Duo ipsum erat stet dolor sea ut nonumy tempor. Tempor duo lorem eos
-                    sit sed ipsum takimata ipsum sit est. Ipsum ea voluptua ipsum sit justo</h5>
-            </div>
-            <div class="mx-auto" style="width: 100%; max-width: 600px;">
-                <div class="input-group">
-                    <select class="form-select border-primary w-25" style="height: 60px;">
-                        <option selected>Department</option>
-                        <option value="1">Department 1</option>
-                        <option value="2">Department 2</option>
-                        <option value="3">Department 3</option>
-                    </select>
-                    <input type="text" class="form-control border-primary w-50" placeholder="Keyword">
-                    <button class="btn btn-dark border-0 w-25">Search</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Search End -->
+
 
 
     <!-- Testimonial Start -->
@@ -224,7 +182,6 @@
                     <div class="owl-carousel testimonial-carousel">
                         @if ($feedbacks->count() > 0)
                             @foreach ($feedbacks as $item)
-
                                 <div class="testimonial-item text-center">
                                     <div class="position-relative mb-5">
                                         <img class="img-fluid rounded-circle mx-auto"
@@ -234,9 +191,9 @@
                                             <i class="fa fa-quote-left fa-2x text-primary"></i>
                                         </div>
                                     </div>
-                                    <p class="fs-4 fw-normal">{{$item->text}}</p>
+                                    <p class="fs-4 fw-normal">{{ $item->text }}</p>
                                     <hr class="w-25 mx-auto">
-                                    <h3>{{$item->patient->user->name}}</h3>
+                                    <h3>{{ $item->patient->user->name }}</h3>
                                     <h6 class="fw-normal text-primary mb-3">
                                         @for ($i = 1; $i <= 5; $i++)
                                             @if ($i <= $item->rating)
@@ -248,7 +205,6 @@
                                     </h6>
                                 </div>
                             @endforeach
-
                         @endif
 
                         <div class="testimonial-item text-center">
@@ -304,8 +260,8 @@
                         <div class="col-lg-4 col-md-6 mb-4">
                             <div class="blog-card">
                                 @if ($item->images->count() > 0)
-                                    <img src="{{ asset('storage/' . $item->images->first()->image) }}" alt="{{ $item->title }}"
-                                        class="blog-image">
+                                    <img src="{{ asset('storage/' . $item->images->first()->image) }}"
+                                        alt="{{ $item->title }}" class="blog-image">
                                 @else
                                     <img src="{{ asset('images/no-image.jpg') }}" alt="No image" class="blog-image">
                                 @endif
@@ -320,8 +276,9 @@
                                 <div class="blog-meta">
                                     <div class="d-flex align-items-center">
                                         @if (!empty($item->doctor->user->image))
-                                            <img src="{{ asset('storage/' . $item->doctor->user->image) }}" class="rounded-circle me-2"
-                                                width="28" height="28" style="object-fit: cover; object-position: center;">
+                                            <img src="{{ asset('storage/' . $item->doctor->user->image) }}"
+                                                class="rounded-circle me-2" width="28" height="28"
+                                                style="object-fit: cover; object-position: center;">
                                         @endif
                                         <small>{{ $item->doctor->user->name ?? 'Ẩn danh' }}</small>
                                     </div>

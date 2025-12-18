@@ -12,7 +12,7 @@ class DoctorSchedule extends Model
 
     protected $table = 'doctor_schedules';
 
-    protected $fillable = ['doctor_id', 'schedule_id', 'day_of_week', 'limit_per_hour'];
+    protected $fillable = ['doctor_id', 'schedule_id', 'day_of_week', 'limit_per_hour','clinic_id'];
 
 
     public function doctor(): BelongsTo
@@ -22,7 +22,12 @@ class DoctorSchedule extends Model
 
     public function schedule()
     {
-        
+
         return $this->belongsTo(Schedule::class, 'schedule_id');
+    }
+
+    public function clinic()
+    {
+        return $this->belongsTo(Clinics::class, 'clinic_id');
     }
 }

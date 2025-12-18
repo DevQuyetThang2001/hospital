@@ -1,21 +1,25 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\DiseasesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\APIController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Doctor\DoctorController;
+use App\Http\Controllers\Doctor\DoctorNotificationController;
+use App\Http\Controllers\Manager\ClinicController;
 use App\Http\Controllers\Manager\ManagerController;
+use App\Http\Controllers\Receptionist\AdmissionsController;
+use App\Http\Controllers\Receptionist\ReceptionistController;
+use App\Http\Controllers\Receptionist\ReceptionistNotificationController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\PreventBackHistory;
+use App\Models\Room;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
-
-
 // Clients
-
-
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/lịch-khám', [HomeController::class, 'appointment'])->name('appointment');
@@ -23,7 +27,6 @@ Route::get('/lịch-khám', [HomeController::class, 'appointment'])->name('appoi
 Route::get('/lịch-khám/lọc-lịch-khám', [HomeController::class, 'filter_appointment'])->name('doctor.appointment.filter');
 Route::get('/lịch-khám/{doctor}', [HomeController::class, 'appointmentDetail'])->name('doctor.appointment');
 Route::post('/lịch-khám/{doctor}', [HomeController::class, 'appointmentStore'])->name('doctor.appointment.post');
-
 
 // Bài viết
 
@@ -33,7 +36,6 @@ Route::get('/cẩm-năng-y-khoa/{slug}', [HomeController::class, 'show'])->name(
 // Thông tin bệnh viện
 
 Route::get('/thông-tin-bệnh-viện', [HomeController::class, 'about'])->name('client.hospital.info');
-
 
 // Liên hệ
 
@@ -47,19 +49,25 @@ Route::post('liên-hệ', [HomeController::class, 'send'])->name('client.hospita
 Route::get('/đánh-giá', [HomeController::class, 'feedback'])->name('client.hospital.feedback');
 Route::post('/đánh-giá', [HomeController::class, 'send_feedback'])->name('client.hospital.feedback.store');
 
-
 // Lịch khám của bạn
 Route::get('/lịch-khám-của-bạn', [HomeController::class, 'viewClientAppointment'])->name('client.hospital.listAppointment');
 
-
-Route::get('/lịch-khám-của-bạn/{id}/chi-tiết', [HomeController::class, 'ViewAppointmentDetail'])
-    ->name('client.appointment.detail');
+Route::get('/lịch-khám-của-bạn/{id}/chi-tiết', [HomeController::class, 'ViewAppointmentDetail'])->name('client.appointment.detail');
 
 // Xuất PDF
-Route::get('/lịch-khám-của-bạns/{id}/xuất-pdf', [HomeController::class, 'exportAppointmentPDF'])
-    ->name('client.appointment.exportPDF');
+Route::get('/lịch-khám-của-bạns/{id}/xuất-pdf', [HomeController::class, 'exportAppointmentPDF'])->name('client.appointment.exportPDF');
 
 
+
+// Đội ngũ y bác sĩ
+Route::get('/đội-ngũ-y-bác-sĩ', [HomeController::class, 'doctors'])->name('client.doctors.list');
+Route::get('/đội-ngũ-y-bác-sĩ/{id}', [HomeController::class, 'showDoctor'])->name('client.doctors.show');
+
+
+
+// Tìm kiếm bác sĩ theo loại bệnh mô tả
+Route::get('/tìm-kiếm-bác-sĩ-theo-mô-tả-bệnh', [HomeController::class, 'searchDoctorByDisease'])->name('client.doctors.searchByDisease');
+Route::post('/tìm-kiếm-bác-sĩ-theo-mô-tả-bệnh', [HomeController::class, 'processSearch'])->name('client.doctors.handleSearchByDisease');
 
 // Thong tin tài khoản
 
@@ -67,7 +75,6 @@ Route::middleware(['auth', PreventBackHistory::class])->group(function () {
     Route::get('/thông-tin-tài-khoản', [HomeController::class, 'accountInfo'])->name(name: 'client.account.info');
     Route::post('/thông-tin-tài-khoản/cập-nhật', [HomeController::class, 'updateAccountInfo'])->name('client.account.updateInfo');
 });
-
 
 
 // ----------------- ROLE ADMIN --------------------
@@ -93,7 +100,6 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':admin
     Route::get('/admin/dashboard/edit_department/{id}', [AdminController::class, 'edit_department'])->name('admin.departments.editDepartmentForm');
     Route::post('/admin/dashboard/edit_department/{id}', [AdminController::class, 'update_department'])->name('admin.departments.edit');
 
-
     // doctors
     Route::get('/admin/dashboard/doctors', [AdminController::class, 'doctors'])->name('admin.doctors.list');
     Route::get('/admin/dashboard/add_doctor', [AdminController::class, 'add_doctor'])->name('admin.doctors.addDoctorForm');
@@ -101,9 +107,6 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':admin
     Route::get('/admin/dashboard/edit_doctor/{id}', [AdminController::class, 'edit_doctor'])->name('admin.doctor.editDoctorForm');
     Route::post('/admin/dashboard/edit_doctor/{id}', [AdminController::class, 'update_doctor'])->name('admin.doctor.edit');
     Route::get('/admin/dashboard/delete_doctor/{id}', [AdminController::class, 'delete_doctor'])->name('admin.doctors.delete');
-
-
-
 
     // rooms
 
@@ -117,8 +120,6 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':admin
     Route::post('/admin/dashboard/rooms/{department_id}/edit_room/{room_id}', [AdminController::class, 'update_room'])->name('admin.rooms.edit');
     Route::get('/admin/dashboard/rooms/{department_id}/delete/{room_id}', [AdminController::class, 'delete_room'])->name('admin.rooms.delete');
 
-
-
     // patients
 
     Route::get('/admin/dashboard/patients', [AdminController::class, 'patients'])->name('admin.patients.list');
@@ -128,20 +129,30 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':admin
     Route::post('/admin/dashboard/edit_patient/{id}', [AdminController::class, 'update_patient'])->name('admin.patient.edit');
     Route::get('/admin/dashboard/delete_patient/{id}', [AdminController::class, 'delete_patient'])->name('admin.patient.delete');
 
-
     //View Schedules
 
     Route::get('/admin/dashboard/schedules', [ScheduleController::class, 'schedules'])->name('admin.schedules.list');
 
-
     // Feedbacks
 
-    Route::get("/admin/dashboard/feedbacks", [AdminController::class, 'feedbacks'])->name('admin.feedbacks.list');
+    Route::get('/admin/dashboard/feedbacks', [AdminController::class, 'feedbacks'])->name('admin.feedbacks.list');
     Route::get('/admin/dashboard/delete_feedback/{id}', [AdminController::class, 'delete_feedback'])->name('admin.feedbacks.delete');
+
+
+    // Loại bệnh
+    Route::get('/admin/dashboard/diseases', [DiseasesController::class, 'index'])->name('admin.diseases.list');
+    Route::get('/admin/dashboard/diseases/add', [DiseasesController::class, 'add'])->name('admin.diseases.addDiseaseForm');
+    Route::post('/admin/dashboard/diseases/add', [DiseasesController::class, 'store'])->name('admin.diseases.add');
+    Route::get('/admin/dashboard/diseases/edit/{id}', [DiseasesController::class, 'edit'])->name('admin.diseases.editDiseaseForm');
+    Route::post('/admin/dashboard/diseases/edit/{id}', [DiseasesController::class, 'update'])->name('admin.diseases.update');
+    Route::get('/admin/dashboard/diseases/delete/{id}', [DiseasesController::class, 'delete'])->name('admin.diseases.delete');
+   
+   // Gán loại bệnh cho bác sĩ
+    Route::get('admin/doctors/{id}/assign-diseases', [AdminController::class, 'assignDiseaseForm'])
+        ->name('admin.doctors.assignDiseaseForm');
+    Route::post('admin/doctors/{id}/assign-diseases', [AdminController::class, 'assignDisease'])
+        ->name('admin.doctors.assignDisease');
 });
-
-
-
 
 // ------------ DOCTOR ROLE ---------------
 Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':doctor'])->group(function () {
@@ -158,28 +169,18 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':docto
     // Cẩm năng y khoa
     Route::get('/doctor/blogs/create', [DoctorController::class, 'createBlog'])->name('doctor.blogs.create');
     Route::post('/doctor/blogs/create', [DoctorController::class, 'storeBlog'])->name('doctor.blogs.store');
-    Route::get(
-        '/doctor/blogs/edit/{id}',
-        [DoctorController::class, 'editBlog']
-    )->name('doctor.blogs.edit');
+    Route::get('/doctor/blogs/edit/{id}', [DoctorController::class, 'editBlog'])->name('doctor.blogs.edit');
 
-    Route::put(
-        '/doctor/blogs/edit/{id}',
-        [DoctorController::class, 'updateBlog']
-    )->name('doctor.blogs.update');
+    Route::put('/doctor/blogs/edit/{id}', [DoctorController::class, 'updateBlog'])->name('doctor.blogs.update');
 
-
-    Route::delete('doctor/blogs/{id}', [DoctorController::class, 'deleteBlog'])
-        ->name('doctor.blogs.delete');
-
+    Route::delete('doctor/blogs/{id}', [DoctorController::class, 'deleteBlog'])->name('doctor.blogs.delete');
 
     // Xem lịch khám bệnh và xác nhận
 
     Route::get('doctor/list_appointment', [DoctorController::class, 'viewAppointment'])->name('doctor.listAppointment');
     Route::post('doctor/list_appointment/confirm/{id}', [DoctorController::class, 'confirmAppointment'])->name('doctor.listAppointment.confirm');
     Route::post('doctor/list_appointment/reject/{id}', [DoctorController::class, 'rejectAppointment'])->name('doctor.listAppointment.reject');
-    Route::post('doctor/list_appointment/complete/{id}', [DoctorController::class, 'completeAppointment'])
-        ->name('doctor.listAppointment.complete');
+    Route::post('doctor/list_appointment/complete/{id}', [DoctorController::class, 'completeAppointment'])->name('doctor.listAppointment.complete');
 
     // Xác nhận tài khoản bệnh nhân
     Route::get('doctor/patients/list', [DoctorController::class, 'list_patient_account'])->name('doctor.patients.list');
@@ -189,29 +190,28 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':docto
     Route::get('/doctor/patients/confirm', [DoctorController::class, 'show_form_patient'])->name('doctor.patients.show');
     Route::post('/doctor/patients/confirm', [DoctorController::class, 'confirm_patient'])->name('doctor.patients.store');
 
-
     // Xem hồ sơ bệnh án
     Route::get('/doctor/patients/medical-record', [DoctorController::class, 'viewMedicalRecord'])->name('doctor.patient.medicalRecord');
     Route::get('/doctor/patients/medical-record/add', [DoctorController::class, 'addMedicalRecord'])->name('doctor.patient.medicalRecord.add');
     Route::post('/doctor/patients/medical-record/add', [DoctorController::class, 'storeMedicalRecord'])->name('doctor.patient.medicalRecord.store');
     Route::get('/doctor/patients/medical-record/{id}', [DoctorController::class, 'showMedicalRecord'])->name('doctor.patient.medicalRecord.show');
-    Route::put('/doctor/patients/medical-record/{id}/update-treatment', [DoctorController::class, 'updateTreatment'])
-        ->name('doctor.patient.medicalRecord.updateTreatment');
+    Route::put('/doctor/patients/medical-record/{id}/update-treatment', [DoctorController::class, 'updateTreatment'])->name('doctor.patient.medicalRecord.updateTreatment');
 
     Route::get('/doctor/account', [DoctorController::class, 'accountInfo'])->name('doctor.account');
     Route::post('/doctor/account', [DoctorController::class, 'updateAccountInfo'])->name('doctor.account.update');
+
+    // Thông báo mới về lịch khám
+    Route::get('/doctor/notifications', [DoctorNotificationController::class, 'getNotifications']);
+    Route::get('/doctor/notifications/count', [DoctorNotificationController::class, 'getUnreadCount']);
+    Route::post('/doctor/notifications/mark-as-read', [DoctorNotificationController::class, 'markAsRead'])->name('doctor.notifications.markAsRead');
 });
-
-
-
-
 
 // ------------ MANAGER ROLE ---------------
 Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':schedule_manager'])->group(function () {
     Route::get('/manager/dashboard', [ManagerController::class, 'index'])->name('manager.index');
     // Tao lịch khám
     Route::get('/manager/schedules/view-all', [ManagerController::class, 'doctorSchedules'])->name('manager.schedules.all');
-    Route::get('/manager/schedules/list',  [ManagerController::class, 'listSchedules'])->name('manager.schedules.list');
+    Route::get('/manager/schedules/list', [ManagerController::class, 'listSchedules'])->name('manager.schedules.list');
     Route::get('/manager/schedules/create', [ManagerController::class, 'createSchedule'])->name('manager.schedules.create');
     Route::post('/manager/schedules/create', [ManagerController::class, 'storeSchedule'])->name('manager.schedules.store');
     Route::get('/manager/schedules/edit/{id}', [ManagerController::class, 'editSchedule'])->name('manager.schedules.edit');
@@ -221,16 +221,56 @@ Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':sched
     Route::post('/manager/account', [ManagerController::class, 'updateAccountInfo'])->name('manager.account.update');
 
 
+
+    // Quản lý phòng khám
+    Route::get('/manager/clinics', [ClinicController::class, 'index'])->name('manager.clinics.list');
+    Route::get('/manager/clinics/create', [ClinicController::class, 'createClinic'])->name('manager.clinics.create');
+    Route::post('/manager/clinics/create', [ClinicController::class, 'storeClinic'])->name('manager.clinics.store');
+    Route::get('/manager/clinics/edit/{id}', [ClinicController::class, 'editClinic'])->name('manager.clinics.edit');
+    Route::put('/manager/clinics/edit/{id}', [ClinicController::class, 'updateClinic'])->name('manager.clinics.update');
+    Route::delete('/manager/clinics/delete/{id}', [ClinicController::class, 'deleteClinic'])->name('manager.clinics.delete');
+
 });
 
+// ----------- RECEPTIONIST ROLE ---------------
+
+Route::middleware(['auth', PreventBackHistory::class, CheckRole::class . ':receptionist'])->group(function () {
+    Route::get('/receptionist/dashboard', [ReceptionistController::class, 'index'])->name('receptionist.index');
+    // Xem tất cả lịch khám
+    Route::get('/receptionist/schedules/view', [ReceptionistController::class, 'viewSchedule'])->name('receptionist.schedules.view');
+
+
+    // Xem tất cả lịch hẹn
+    Route::get('/receptionist/appointments/list', [ReceptionistController::class, 'listAppointments'])->name('receptionist.appointments.list');
+    Route::post('/receptionist/appointments/confirm/{id}', [ReceptionistController::class, 'confirmAppointment'])->name('receptionist.appointments.confirm');
+    Route::post('/receptionist/appointments/reject/{id}', [ReceptionistController::class, 'rejectAppointment'])->name('receptionist.appointments.reject');
+
+    // Thông báo mới về lịch khám cho lễ tân
+    Route::get('/receptionist/notifications', [ReceptionistNotificationController::class, 'getNotifications']);
+    Route::get('/receptionist/notifications/count', [ReceptionistNotificationController::class, 'getUnreadCount']);
+    Route::post('/receptionist/notifications/mark-as-read', [ReceptionistNotificationController::class, 'markAsRead'])->name('receptionist.notifications.markAsRead');
 
 
 
+    // Đặt lịch khám cho bệnh nhân không có tài khoản
+    Route::get('/receptionist/appointments/create', [ReceptionistController::class, 'createAppointment'])->name('receptionist.appointments.create');
+    Route::get('/receptionist/appointments/create/{doctor}', [ReceptionistController::class, 'detailAppointment'])->name('receptionist.appointment.detail');
+
+    Route::post('/receptionist/appointments/create/{doctor}', [ReceptionistController::class, 'appointmentStoreByReceptionist'])->name('receptionist.appointment.store');
 
 
+    // Quản lý nhập viện
+    Route::get('/receptionist/admissions', [AdmissionsController::class, 'index'])->name('receptionist.admissions.index');
+    Route::get('/receptionist/admissions/create', [AdmissionsController::class, 'create'])->name('receptionist.admission.create');
+    Route::post('/receptionist/admissions/store', [AdmissionsController::class, 'store'])->name('receptionist.admission.store');
 
+    Route::get('receptionist/admission/edit/{id}', [AdmissionsController::class, 'edit'])->name('receptionist.admission.edit');
+    Route::post('receptionist/admission/update/{id}', [AdmissionsController::class, 'update'])->name('receptionist.admission.update');
 
-
+    // Thông tin tài khoản lễ tân
+    Route::get('/receptionist/account', [ReceptionistController::class, 'accountInfo'])->name('receptionist.account');
+    Route::post('/receptionist/account', [ReceptionistController::class, 'updateAccountInfo'])->name('receptionist.account.update');
+});
 
 
 

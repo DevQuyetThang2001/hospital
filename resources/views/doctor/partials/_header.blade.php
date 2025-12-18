@@ -17,6 +17,7 @@
     <!-- endinject -->
     <link rel="stylesheet" href="{{ asset('admin/css/timetable.css') }}">
     <link rel="shortcut icon" href="{{ asset('admin/images/favicon.png') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>
 
 <body>
@@ -87,54 +88,19 @@
                             </a>
                         </div>
                     </li>
-                    <li class="nav-item dropdown  d-flex">
+                    <li class="nav-item dropdown d-flex">
                         <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center"
                             id="notificationDropdown" href="#" data-toggle="dropdown">
                             <i class="typcn typcn-bell mr-0"></i>
-                            <span class="count bg-danger">2</span>
+                            <span class="count bg-danger" id="notifCount">0</span>
                         </a>
+
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
                             aria-labelledby="notificationDropdown">
-                            <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
-                            <a class="dropdown-item preview-item">
-                                <div class="preview-thumbnail">
-                                    <div class="preview-icon bg-success">
-                                        <i class="typcn typcn-info-large mx-0"></i>
-                                    </div>
-                                </div>
-                                <div class="preview-item-content">
-                                    <h6 class="preview-subject font-weight-normal">Application Error</h6>
-                                    <p class="font-weight-light small-text mb-0">
-                                        Just now
-                                    </p>
-                                </div>
-                            </a>
-                            <a class="dropdown-item preview-item">
-                                <div class="preview-thumbnail">
-                                    <div class="preview-icon bg-warning">
-                                        <i class="typcn typcn-cog mx-0"></i>
-                                    </div>
-                                </div>
-                                <div class="preview-item-content">
-                                    <h6 class="preview-subject font-weight-normal">Settings</h6>
-                                    <p class="font-weight-light small-text mb-0">
-                                        Private message
-                                    </p>
-                                </div>
-                            </a>
-                            <a class="dropdown-item preview-item">
-                                <div class="preview-thumbnail">
-                                    <div class="preview-icon bg-info">
-                                        <i class="typcn typcn-user-outline mx-0"></i>
-                                    </div>
-                                </div>
-                                <div class="preview-item-content">
-                                    <h6 class="preview-subject font-weight-normal">New user registration</h6>
-                                    <p class="font-weight-light small-text mb-0">
-                                        2 days ago
-                                    </p>
-                                </div>
-                            </a>
+                            <p class="mb-0 font-weight-normal float-left dropdown-header">Thông báo</p>
+                            <div id="notifItems">
+                                <p class="text-center text-muted small p-3 mb-0">Đang tải...</p>
+                            </div>
                         </div>
                     </li>
                     <li class="nav-item nav-profile dropdown">

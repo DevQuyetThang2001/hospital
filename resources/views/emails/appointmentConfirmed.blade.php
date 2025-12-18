@@ -15,7 +15,7 @@
         .email-container {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #ffffff;
+            background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
             overflow: hidden;
@@ -79,8 +79,16 @@
 
         <div class="content">
             <h2>Xin chào {{ $appointment->patient->name ?? 'Quý bệnh nhân' }},</h2>
-            <p>Bác sĩ <strong>{{ $appointment->doctor->user->name ?? '...' }}</strong> đã <strong>xác nhận</strong> lịch
-                hẹn khám của bạn.</p>
+
+            <p>
+                @php
+                    $confirmerName = $appointment->confirmed_by_receptionist_id
+                        ? $appointment->confirmedByReceptionist->user->name ?? 'Lễ tân'
+                        : $appointment->doctor->user->name ?? 'Bác sĩ';
+                @endphp
+
+                {{ $confirmerName }} đã <strong>xác nhận</strong> lịch hẹn khám của bạn.
+            </p>
 
             <div class="info-box">
                 <p><strong>📅 Ngày khám:</strong>

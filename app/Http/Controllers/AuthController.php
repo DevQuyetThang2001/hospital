@@ -39,6 +39,8 @@ class AuthController extends Controller
                     return redirect()->route('manager.index');
                 case 'doctor':
                     return redirect()->route('doctor.index');
+                case 'receptionist':
+                    return redirect()->route('receptionist.index');
                 default:
                     return redirect()->route('home');
             }
@@ -66,21 +68,27 @@ class AuthController extends Controller
 
         $user = $request->validate([
             'name' => 'required|max:100',
-            'email' => 'required|email',
-            'password' => 'required|min:5'
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:5',
+            'CCCD' => 'required|digits:12|unique:users,CCCD',
         ], [
             'name.required' => "Tên tài khoản không được để trống",
             'name.max' => 'Tên tài khoản chỉ được tối đa 100 ký tự',
             'email.required' => "Email không được để trống",
             'email.email' => "Email phải hợp lệ",
+            'email.unique' => 'Email đã tồn tại trong hệ thống',
             'password.required' => 'Mật khẩu không được để trống',
-            'password.min' => 'Mật khẩu phải nhiều hơn 5 ký tự'
+            'password.min' => 'Mật khẩu phải nhiều hơn 5 ký tự',
+            'CCCD.required' => 'Căn cước công dân không được để trống',
+            'CCCD.digits' => 'Căn cước công dân phải đủ 12 chữ số',
+            'CCCD.unique' => 'Căn cước công dân đã tồn tại trong hệ thống'
         ]);
 
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
+        $user->CCCD = $request->CCCD;
 
         $user->save();
 

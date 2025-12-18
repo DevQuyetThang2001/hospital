@@ -254,6 +254,12 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="{{route('admin.diseases.list')}}">
+              <i class="typcn typcn-chart-pie-outline menu-icon"></i>
+              <span class="menu-title">Quản lý loại bệnh</span>
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="{{route('admin.schedules.list')}}">
               <i class="typcn typcn-th-small-outline menu-icon"></i>
               <span class="menu-title">Lịch khám</span>

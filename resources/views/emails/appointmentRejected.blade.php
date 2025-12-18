@@ -91,19 +91,29 @@
             <h1>Bệnh viện Hồng Phúc</h1>
         </div>
 
+
+        @php
+            $rejecterName = $appointment->canceled_by_receptionist_id
+                ? 'Lễ tân'.$appointment->canceledByReceptionist->name ?? 'Lễ tân'
+                : $appointment->doctor->user->name ?? 'Bác sĩ';
+        @endphp
         <div class="content">
             <h2>Xin chào {{ $appointment->patient->name ?? 'Quý bệnh nhân' }},</h2>
-            <p>Chúng tôi rất tiếc phải thông báo rằng lịch hẹn khám của bạn đã <strong style="color:#d32f2f;">bị từ chối</strong>.</p>
+            <p>Chúng tôi rất tiếc phải thông báo rằng lịch hẹn khám của bạn đã <strong style="color:#d32f2f;">bị từ
+                    chối</strong>.</p>
+
+            <p>Lịch hẹn khám của bạn đã <strong style="color:#d32f2f;">bị từ chối</strong> bởi {{ $rejecterName }}.</p>
 
             <div class="info-box">
-                <p><strong>📅 Ngày khám:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}</p>
+                <p><strong>📅 Ngày khám:</strong>
+                    {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}</p>
                 <p><strong>👨‍⚕️ Bác sĩ:</strong> {{ $appointment->doctor->user->name ?? 'Đang cập nhật' }}</p>
                 <p><strong>💬 Ghi chú:</strong> {{ $appointment->notes ?? 'Không có ghi chú' }}</p>
                 <p><strong>⏰ Thời gian:</strong> {{ $appointment->schedule->schedule->start_time ?? 'Chưa có' }} -
                     {{ $appointment->schedule->schedule->end_time ?? '' }}</p>
             </div>
 
-            <p>Rất mong bạn thông cảm vì sự bất tiện này.  
+            <p>Rất mong bạn thông cảm vì sự bất tiện này.
                 Bạn có thể đặt lại lịch hẹn khác vào thời gian phù hợp hơn.</p>
 
             <p style="text-align:center;">

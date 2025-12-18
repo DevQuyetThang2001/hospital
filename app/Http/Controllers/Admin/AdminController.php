@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Avatar;
 use App\Models\Department;
+use App\Models\Diseases;
 use App\Models\Doctor;
 use App\Models\DoctorSchedule;
 use App\Models\FeedBack;
@@ -18,16 +19,118 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
     public function index()
     {
 
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
-            return redirect()->route('auth.index');
+
+        // =======================
+        // THỐNG KÊ NHANH
+        // =======================
+        $totalDoctors      = Doctor::count();
+        $totalPatients     = Patient::count();
+        $todayAppointments = Appointment::whereDate('appointment_date', today())->count();
+
+        // =======================
+        // THỐNG KÊ LỊCH HẸN THEO TRẠNG THÁI
+        // =======================
+        $pending   = Appointment::where('status', 'pending')->count();
+        $confirmed = Appointment::where('status', 'confirmed')->count();
+        $cancelled = Appointment::where('status', 'cancelled')->count();
+        $completed = Appointment::where('status', 'completed')->count();
+
+        // =======================
+        // THỐNG KÊ PHÒNG
+        // =======================
+        $roomsAvailable   = Room::where('status', 'available')->count();
+        $roomsOccupied    = Room::where('status', 'occupied')->count();
+        $roomsMaintenance = Room::where('status', 'maintenance')->count();
+
+        // ================================
+        // THỐNG KÊ LỊCH HẸN THEO THỨ (TUẦN HIỆN TẠI)
+        // ================================
+        $daysVi = [
+            1 => 'Thứ 2',
+            2 => 'Thứ 3',
+            3 => 'Thứ 4',
+            4 => 'Thứ 5',
+            5 => 'Thứ 6',
+            6 => 'Thứ 7',
+            0 => 'Chủ nhật',
+        ];
+
+        // Gán mặc định 0
+        $appointmentsPerDay = [
+            'Thứ 2'    => 0,
+            'Thứ 3'    => 0,
+            'Thứ 4'    => 0,
+            'Thứ 5'    => 0,
+            'Thứ 6'    => 0,
+            'Thứ 7'    => 0,
+            'Chủ nhật' => 0,
+        ];
+
+        // Lấy lịch hẹn trong tuần hiện tại
+        $appointments = Appointment::whereBetween('appointment_date', [
+            Carbon::now()->startOfWeek(Carbon::MONDAY),
+            Carbon::now()->endOfWeek(Carbon::SUNDAY)
+        ])->get();
+
+        // Đếm lịch hẹn theo thứ
+        foreach ($appointments as $apt) {
+            $dayNumber = Carbon::parse($apt->appointment_date)->dayOfWeek; // 0=sun, 1=mon...
+            $dayName = $daysVi[$dayNumber];
+            $appointmentsPerDay[$dayName]++;
         }
-        return view('admin.modules.dashboard');
+
+
+     
+        $topDoctor = Appointment::select('doctor_id')
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('doctor_id')
+            ->orderByDesc('total')
+            ->with('doctor')               // để lấy tên bác sĩ
+            ->first();
+
+
+        $topDepartment = Appointment::select('doctors.department_id')
+            ->join('doctors', 'appointments.doctor_id', '=', 'doctors.id')
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('doctors.department_id')
+            ->orderByDesc('total')
+            ->with(['doctor.department'])
+            ->first();
+
+        $topDepartmentName = $topDepartment
+            ? Department::find($topDepartment->department_id)->name
+            : null;
+
+        $topDisease = null;
+
+        if ($topDepartment) {
+            $topDisease = Diseases::where('department_id', $topDepartment->department_id)->first();
+        }
+
+        return view('admin.modules.dashboard', compact(
+            'totalDoctors',
+            'totalPatients',
+            'todayAppointments',
+            'pending',
+            'confirmed',
+            'cancelled',
+            'completed',
+            'roomsAvailable',
+            'roomsOccupied',
+            'roomsMaintenance',
+            'appointmentsPerDay',
+            'topDoctor',
+            'topDepartment',
+            'topDepartmentName',
+            'topDisease'
+        ));
     }
 
     // --------- USERS ---------- 
@@ -54,6 +157,7 @@ class AdminController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|min:5',
             'role' => 'required',
+            'CCCD' => 'required|unique:users',
             'image' => 'required'
         ], [
             'name.required' => "Bắt buộc phải điền họ tên",
@@ -62,19 +166,19 @@ class AdminController extends Controller
             'email.unique' => "Email đã tồn tại",
             'password.required' => "Bắt buộc phải điền mật khẩu",
             'password.min' => "Mật khẩu phải nhiều hơn 5 ký tự",
-            'role.required' => "Vai trò của người dùng phải được chỉ định"
+            'role.required' => "Vai trò của người dùng phải được chỉ định",
+            'CCCD.required' => "Bắt buộc phải điền căn cước công dân",
+            'CCCD.unique' => "Căn cước công dân đã tồn tại",
+
         ]);
-
-
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->role = $request->role;
+        $user->CCCD = $request->CCCD;
         $user->image = $request->file('image')->store('avatars', 'public'); // ✅ Lưu vào storage/app/public/avatars
         $user->save();
-
-
         return redirect()->route('admin.users.list')->with('success', "Thêm thành công tài khoản");
     }
 
@@ -113,6 +217,22 @@ class AdminController extends Controller
             }
         }
 
+        if (!$user->CCCD && $request->CCCD) {
+            $request->validate([
+                'CCCD' => 'required|digits:12|unique:users,CCCD'
+            ], [
+                'CCCD.required' => "Bắt buộc phải điền căn cước công dân",
+                'CCCD.digits' => "Căn cước công dân phải đủ 12 chữ số",
+                'CCCD.unique' => "Căn cước công dân đã tồn tại",
+            ]);
+
+            $user->CCCD = $request->CCCD;
+        }
+
+
+        if (!$user->isDirty()) {
+            return back()->with('info', 'Không có thông tin cần thay đổi'); // Không báo gì
+        }
 
         $user->save();
         // dd($user);
@@ -164,16 +284,11 @@ class AdminController extends Controller
             'status.required' => "Bắt buộc phải chọn trạng thái",
         ]);
 
-
         $department = new Department();
         $department->name = $request->name;
         $department->description = $request->description;
         $department->status = $request->status;
         $department->save();
-
-        // dd($department);
-
-
         return redirect()->route('admin.departments.list')->with('success', 'Thêm thành công khoa viện');
     }
 
@@ -253,12 +368,14 @@ class AdminController extends Controller
             'specialization' => 'required',
             'experience_years' => 'required',
             'license_number' => 'required',
+            'description' => 'required',
         ], [
             'department_id.required' => "Bắt buộc phải chọn khoa viện",
             'user_id.required' => "Bắt buộc phải chọn tài khoản",
             'specialization.required' => "Bắt buộc phải điền chuyên môn",
             'experience_years.required' => "Bắt buộc phải điền số năm kinh nghiệm",
             'license_number.required' => "Bắt buộc phải điền chứng chỉ hành nghề",
+            'description.required' => "Bắt buộc phải điền mô tả bác sĩ",
         ]);
 
 
@@ -268,6 +385,7 @@ class AdminController extends Controller
         $doctor->specialization = $request->specialization;
         $doctor->experience_years = $request->experience_years;
         $doctor->license_number = $request->license_number;
+        $doctor->description = $request->description;
         $doctor->save();
 
         // dd($doctor);
@@ -283,9 +401,6 @@ class AdminController extends Controller
         $doctor = Doctor::find($id);
         $departments = Department::all();
 
-
-
-        // dd($doctor);
         return view('admin.modules.doctors.edit', compact('doctor', 'departments'));
     }
 
@@ -297,18 +412,21 @@ class AdminController extends Controller
             'specialization' => 'required',
             'license_number' => 'required',
             'experience_years' => 'required',
-            'department_id' => 'required'
+            'department_id' => 'required',
+            'description' => 'required',
         ], [
             'specialization.required' => "Không được để trống chuyên môn",
             'license_number.required' => "Không được để trống chứng chỉ hành nghề",
             'experience_years.required' => "Không được để trống số năm kinh nghiệm",
             'department_id.required' => "Không được để trống số khoa viện",
+            'description.required' => "Bắt buộc phải điền mô tả bác sĩ",
         ]);
         $doctor = Doctor::find($id);
         $doctor->specialization = $request->specialization;
         $doctor->license_number = $request->license_number;
         $doctor->experience_years = $request->experience_years;
         $doctor->department_id = $request->department_id;
+        $doctor->description = $request->description;
         $doctor->save();
 
         if ($doctor->isDirty()) {
@@ -319,6 +437,8 @@ class AdminController extends Controller
         return redirect()->route('admin.doctors.list');
     }
 
+
+
     public function delete_doctor($id)
     {
         $doctor = Doctor::find($id);
@@ -328,6 +448,35 @@ class AdminController extends Controller
         return back()->with('delete', "Xóa thành công");
     }
 
+    // Gán loại bệnh cho bác sĩ
+    public function assignDisease(Request $request, $id)
+    {
+        $request->validate([
+            'diseases' => 'required|array',
+        ], [
+            'diseases.required' => 'Bạn phải chọn ít nhất một loại bệnh.'
+        ]);
+
+        $doctor = Doctor::findOrFail($id);
+
+        // Gán loại bệnh
+        $doctor->diseases()->sync($request->diseases);
+
+        return redirect()->route('admin.doctors.list')
+            ->with('success', 'Gán loại bệnh cho bác sĩ thành công');
+    }
+
+    public function assignDiseaseForm($id)
+    {
+        $doctor = Doctor::with('diseases')->findOrFail($id);
+
+        // dd($doctor);
+        // Lấy bệnh theo khoa mà bác sĩ trực thuộc
+        $diseases = Diseases::where('department_id', $doctor->department_id)->get();
+
+
+        return view('admin.modules.diseases.assign_disease', compact('doctor', 'diseases'));
+    }
 
 
     // ----------- QUAN LY PHONG BENH -----------
@@ -510,20 +659,65 @@ class AdminController extends Controller
     public function patients()
     {
         $data = Patient::all();
+        // dd($data);
         return view('admin.modules.patients.list', compact('data'));
     }
 
 
+    // public function add_patient()
+    // {
+    //     $department = Department::all();
+    //     $user = User::where('role', 'patient')->whereNotIn('id', function ($query) {
+    //         $query->select('user_id')
+    //             ->from('patients');
+    //     })->get();
+    //     $users = User::where('role', 'patient')
+    //         ->whereNotIn('id', function ($query) {
+    //             $query->select('user_id')->from('patients');
+    //         })->get();
+
+    //     // $patientUserIds = Patient::pluck('user_id')->toArray();
+
+    //     // $users = User::where('role', 'patient')
+    //     //     ->whereNotIn('id', $patientUserIds)
+    //     //     ->get();
+    //     // dd($users);
+
+    //     // dd($user);
+    //     return view('admin.modules.patients.add', compact('department', 'users'));
+    // }
+    // public function add_patient()
+    // {
+    //     // Lấy tất cả các khoa
+    //     $departments = Department::all();
+
+    //     // Lấy danh sách user_id đã có trong bảng patients
+    //     $patientUserIds = Patient::pluck('user_id')->toArray();
+
+    //     // Lấy danh sách user chưa có trong patients
+    //     $users = User::where('role', 'patient')
+    //         ->whereNotIn('id', $patientUserIds)
+    //         ->get();
+
+    //     // Truyền đúng tên biến vào view
+    //     return view('admin.modules.patients.add', compact('departments', 'users'));
+    // }
     public function add_patient()
     {
-        $department = Department::all();
-        $user = User::where('role', 'patient')->whereNotIn('id', function ($query) {
-            $query->select('user_id')
-                ->from('patients');
-        })->get();
 
-        // dd($user);
-        return view('admin.modules.patients.add', compact('department', 'user'));
+        
+        $departments = Department::all();
+
+        $patientUserIds = Patient::pluck('user_id')->toArray();
+        
+        $validPatientIds = array_filter($patientUserIds, function ($value) {
+            return !is_null($value);
+        });
+
+        $users = User::where('role', 'patient')
+            ->whereNotIn('id', $validPatientIds)
+            ->get();
+        return view('admin.modules.patients.add', compact('departments', 'users'));
     }
 
 
@@ -572,11 +766,48 @@ class AdminController extends Controller
     }
 
 
+    // public function update_patient($id, Request $request)
+    // {
+
+
+    //     $patient = $request->validate([
+    //         'date_of_birth' => 'required',
+    //         'gender' => 'required',
+    //         'phone' => 'required|numeric',
+    //         'address' => 'required',
+    //         'department_id' => 'required'
+    //     ], [
+    //         'date_of_birth.required' => "Không được để trống ngày tháng năm sinh",
+    //         'gender.required' => "Phải chọn giới tính",
+    //         'phone.required' => "Không được để trống số điện thoại",
+    //         'phone.numeric' => "Số điện thoại phải là kiểu số",
+    //         'address.required' => "Không được để trống địa chỉ",
+    //         'department_id.required' => "Không được để trống khoa viện",
+    //     ]);
+    //     $patient = Patient::findOrFail($id);
+    //     $patient->date_of_birth = $request->date_of_birth;
+    //     $patient->gender = $request->gender;
+    //     $patient->phone = $request->phone;
+    //     $patient->address = $request->address;
+    //     $patient->department_id = $request->department_id;
+    //     // $patient->save();
+
+    //     if ($patient->isDirty()) {
+    //         $patient->save();
+    //         return redirect()->route('admin.patients.list')->with('update', 'Sửa thành công bệnh nhân');
+    //     }
+
+    //     return redirect()->route('admin.patients.list'); // Không hiển thị thông báo nếu không có thay đổi
+
+
+
+    // }
+
+
     public function update_patient($id, Request $request)
     {
-
-
-        $patient = $request->validate([
+        // Validate dữ liệu
+        $validated = $request->validate([
             'date_of_birth' => 'required',
             'gender' => 'required',
             'phone' => 'required|numeric',
@@ -590,24 +821,32 @@ class AdminController extends Controller
             'address.required' => "Không được để trống địa chỉ",
             'department_id.required' => "Không được để trống khoa viện",
         ]);
+
         $patient = Patient::findOrFail($id);
-        $patient->date_of_birth = $request->date_of_birth;
+
+        // Chuyển date_of_birth sang định dạng MySQL
+        $date = \DateTime::createFromFormat('d/m/Y', $request->date_of_birth);
+        if ($date) {
+            $patient->date_of_birth = $date->format('Y-m-d');
+        } else {
+            return back()->withErrors(['date_of_birth' => 'Ngày sinh không hợp lệ (d/m/Y)']);
+        }
+
         $patient->gender = $request->gender;
         $patient->phone = $request->phone;
         $patient->address = $request->address;
         $patient->department_id = $request->department_id;
-        // $patient->save();
 
+        // Chỉ lưu nếu có thay đổi
         if ($patient->isDirty()) {
             $patient->save();
             return redirect()->route('admin.patients.list')->with('update', 'Sửa thành công bệnh nhân');
         }
 
-        return redirect()->route('admin.patients.list'); // Không hiển thị thông báo nếu không có thay đổi
-
-
-
+        return redirect()->route('admin.patients.list');
     }
+
+
 
 
     public function delete_patient($id)

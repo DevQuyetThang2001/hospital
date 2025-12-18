@@ -39,7 +39,7 @@
                 @foreach ($doctors as $doctor)
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm">
-                            <img src="{{ asset('storage/' . $doctor->user->image) }}" class="card-img-top blog-image"
+                            <img style="object-position: center-top; height: 500px;" src="{{ asset('storage/' . $doctor->user->image) }}" class="card-img-top blog-image"
                                 alt="{{ $doctor->user->name }}">
                             <div class="card-body">
                                 <h5 class="card-title text-primary">{{ $doctor->user->name }}</h5>

@@ -81,9 +81,9 @@
                             <div class="dropdown-menu m-0">
                                 <a href="{{route('client.blog.list')}}" class="dropdown-item">Cẩm năng y khoa</a>
                                 <a href="{{route('client.hospital.feedback')}}" class="dropdown-item">Đánh giá</a>
-                                <a href="team.html" class="dropdown-item">Đội ngũ bác sĩ</a>
+                                <a href="{{ route('client.doctors.list') }}" class="dropdown-item">Đội ngũ bác sĩ</a>
                                 <a href="{{route('appointment')}}" class="dropdown-item">Đặt lịch khám</a>
-                                <a href="search.html" class="dropdown-item">Tìm kiếm</a>
+                                <a href="{{ route('client.doctors.searchByDisease') }}" class="dropdown-item">Tìm kiếm</a>
                             </div>
                         </div>
                         <a href="{{ route('client.hospital.contact') }}" class="nav-item nav-link">Liên hệ</a>

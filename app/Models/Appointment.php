@@ -50,4 +50,22 @@ class Appointment extends Model
     {
         return $this->hasMany(MedicalRecord::class, 'appointment_id', 'id');
     }
+
+    public function confirmedByReceptionist()
+    {
+        return $this->belongsTo(User::class, 'confirmed_by_receptionist_id');
+    }
+
+    public function canceledByReceptionist()
+    {
+        return $this->belongsTo(User::class, 'canceled_by_receptionist_id');
+    }
+
+    public function completedByDoctor()
+    {
+        return $this->belongsTo(Doctor::class, 'completed_by_doctor_id');
+    }
+
+
+    
 }
